@@ -22,10 +22,10 @@ library(vegan, quietly = TRUE)
 library(Dune, quietly = TRUE)
 library(ggplot2, quietly = TRUE) #ggplot2-v3.3.5
 library(tidyverse, quietly = TRUE) #tidyverse-v1.3.1
-library(UpSetR, quietly = TRUE)
-library(reshape2, quietly = TRUE)
-library(factoextra, quietly = TRUE)
-library(NbClust, quietly = TRUE)
+# library(UpSetR, quietly = TRUE)
+# library(reshape2, quietly = TRUE)
+# library(factoextra, quietly = TRUE)
+# library(NbClust, quietly = TRUE)
 library(ComplexHeatmap, quietly = TRUE)
 ```
 
@@ -91,6 +91,7 @@ median(lib.sizes.cpm$lib.size)
 keep <- rowSums(cpm(gcount) > 3.33) >= 2
 table(keep)
 DGEdat <- DGEdat[keep, , keep.lib.sizes=FALSE]
+nrow(DGEdat)
 ```
 
 ##  3. Data normalization  
@@ -114,7 +115,7 @@ pca <- prcomp(t(DGEdat.cpm$counts[,d$Sample])) #calculate eigengenes
 pc.data <- summary(out<-prcomp(t(DGEdat.cpm$counts[,d$Sample]))); pc.data
 plot(out) #theres a lot of variation in the data
 d$Timepoint <- gsub("TP", "", d$Timepoint)
-DGEdat_PCcor <- lapply(d[,c(9:14)], as.factor)
+DGEdat_PCcor <- lapply(d[,c(7,9:14)], as.factor)
 DGEdat_PCcor <- as.tibble(lapply(DGEdat_PCcor, as.numeric))
 DGEdat_PCcor <- cbind(d$lib.size, DGEdat_PCcor)
 rownames(DGEdat_PCcor) <- d$Sample
@@ -142,10 +143,13 @@ kruskal.test(PC8 ~ CO2, data = pc_cor)
 Visualize first two principle coordinates
 ```{r}
 percentVar <- pca$sdev^2/sum(pca$sdev^2) #save % variation by PC1 and PC2
+
 d <- data.frame(PC2 = pca$x[, 2], PC8 = pca$x[, 8], d) #make a dataframe containing all plotting info
 
 allgenes_PCA <- ggplot(data = d, aes_string(x = "PC2", y = "PC8")) + 
-  geom_point(size = 3, aes(colour=Temperature)) +
+  geom_point(size = 3, color='black', aes(shape=Temperature, fill=Temperature)) +
+  scale_shape_manual(guide="legend", values = c('Amb'=21, 'Hot'=24)) +
+  scale_fill_manual(guide="legend", values=c('Amb'="#b7b9dc", 'Hot'="#eabaa2")) +
   xlab(paste0("PC2: ", round(percentVar[2] * 100), "% variance")) +
   ylab(paste0("PC8: ", round(percentVar[8] * 100), "% variance")) +
   coord_fixed() +
@@ -158,7 +162,7 @@ allgenes_PCA <- ggplot(data = d, aes_string(x = "PC2", y = "PC8")) +
         axis.title = element_text(size = 14), #Axis title size
         axis.text = element_blank()); allgenes_PCA #Axis text size and view plot
 
-ggsave("Output/NEW_1a-edgeR-allsamples-allgenes-PCA.pdf", allgenes_PCA)
+ggsave("Output/1b-Mcap-edgeR-allsamples-allgenes-PCA.pdf", allgenes_PCA)
 ```
 
 Plot as a dendrogram
