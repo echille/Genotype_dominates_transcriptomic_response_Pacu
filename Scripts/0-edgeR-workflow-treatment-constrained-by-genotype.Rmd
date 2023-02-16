@@ -1,0 +1,329 @@
+---
+title: "edgeR Workflow for differential gene expression analysis using all samples (rather than just ATAC)"
+author: "Erin Chille"
+date: "10/24/2021"
+output:
+  pdf_document: default
+  html_notebook: default
+---
+
+```{r setup, include=FALSE}
+rm(list = ls()) #clear environment
+```
+
+## Overview
+
+![edgeR workflow overview](https://raw.githubusercontent.com/echille/Tidy-Tuesday/master/edgeR_workflow_overview.png)
+*Note: Open Rproj first, then script. To easily use relative paths, click the down button next to knit and then click "Knit Directory --> Project Directory". This should make loading and saving files much easier.*
+
+## 1. Load packages and input data
+
+Load packages
+```{r, message=FALSE, warning=FALSE}
+library(edgeR, quietly = TRUE) #edgeR-v3.30.3
+library(vegan, quietly = TRUE)
+library(Dune, quietly = TRUE)
+library(ggplot2, quietly = TRUE) #ggplot2-v3.3.5
+library(tidyverse, quietly = TRUE) #tidyverse-v1.3.1
+library(UpSetR, quietly = TRUE)
+library(reshape2, quietly = TRUE)
+library(factoextra, quietly = TRUE)
+library(NbClust, quietly = TRUE)
+library(ComplexHeatmap, quietly = TRUE)
+```
+
+Load the input file containing the treatment information
+```{r}
+#treatment information
+# treatmentinfo <- read.csv("Sample_Info/sample_genotypes.csv", header = TRUE, sep = ",", fileEncoding="UTF-8-BOM") #read in file
+treatmentinfo <- read.csv("Sample_Info/samples_Pacuta.annotations.txt", header = TRUE, sep = "\t", fileEncoding="UTF-8-BOM") #read in file
+```
+
+Filter treatment info by treatment and group
+```{r}
+# treatmentinfo <- filter(treatmentinfo, timepoint>"TP3")
+top3groups <- c("Group2", "Group3", "Group6")
+treatmentinfo <- filter(treatmentinfo, group%in%top3groups)
+treatmentinfo$treatment <- gsub("ATAC", "Amb", treatmentinfo$treatment)
+treatmentinfo$treatment <- gsub("ATHC", "Amb", treatmentinfo$treatment)
+treatmentinfo$treatment <- gsub("HTAC", "Hot", treatmentinfo$treatment)
+treatmentinfo$treatment <- gsub("HTHC", "Hot", treatmentinfo$treatment)
+```
+
+
+Load the input file containing the gene count matrix
+```{r}
+#gene count matrix
+#gcount <- as.data.frame(read_delim("Sample_Info/Pocillopora_acuta_KBHIv2.gentrome.fa.gz.salmon.numreads.matrix", delim = "\t", col_names = TRUE, show_col_types = FALSE), fileEncoding="UTF-8-BOM") 
+gcount <- as.data.frame(read_delim("Genome_Info/Pocillopora_acuta_KBHIv2.gentrome.fa.gz.salmon.numreads.matrix", delim = "\t", col_names = TRUE, show_col_types = FALSE), fileEncoding="UTF-8-BOM") #read in file
+rownames(gcount) <- gcount$Name #makes "Name" the rowname
+gcount <- gcount[,-c(1)] #drops the "Name" column
+gcount <- round(gcount) #round 
+dim(gcount); head(gcount)[,1:3] #view dataset attributes
+gcount <- gcount[,treatmentinfo$sample]
+```
+
+Determine library size
+```{r}
+libSize.df <- data.frame(libSize=colSums(gcount))
+```
+
+Make DGE object
+```{r}
+DGEdat <- DGEList(counts=as.matrix(gcount), samples=treatmentinfo,
+                  group=treatmentinfo$treatment)
+dim(DGEdat$counts)
+```
+
+## 2. Pre-filtering
+```{r}
+keep <- rowSums(cpm(gcount) > 3.33) >= 2
+table(keep)
+DGEdat <- DGEdat[keep, , keep.lib.sizes=FALSE]
+```
+
+##  3. Data normalization  
+```{r}
+DGEdat <- calcNormFactors(DGEdat)
+DGEdat$samples
+```
+
+##  4. Plot global gene expression  
+
+Log transform the counts matrix for the next plots
+```{r}
+DGEdat.cpm <- DGEdat #make a copy the edgeR dataset
+DGEdat.cpm$counts <- cpm(DGEdat.cpm$counts, log=TRUE, prior.count=5) #log transform the copy for the next plots
+```
+
+Run a principle coordinates analysis
+```{r}
+pca <- prcomp(t(DGEdat.cpm$counts)) #calculate eigengenes
+pc.data <- summary(out<-prcomp(t(DGEdat.cpm$counts))); pc.data
+plot(out) #theres a lot of variation in the data
+DGEdat.cpm$samples$timepoint <- gsub("TP", "", DGEdat.cpm$samples$timepoint)
+DGEdat_PCcor <- lapply(DGEdat.cpm$samples[,c(6:7,9,11,13)], as.factor)
+DGEdat_PCcor <- as.tibble(lapply(DGEdat_PCcor, as.numeric))
+DGEdat_PCcor <- cbind(DGEdat.cpm$samples$lib.size, DGEdat_PCcor)
+rownames(DGEdat_PCcor) <- DGEdat.cpm$samples$sample
+all<-cbind(scores(out), DGEdat_PCcor)
+correlations<-round(cor(all, method = "spearman"), digits=2)
+plot(correlations)
+pc.data
+write_csv(as.data.frame(correlations), "Output/PC_correlations_group2_hot_amb.csv")
+
+pca <- prcomp(t(DGEdat.cpm$counts)) #calculate eigengenes
+pc.data <- summary(out<-prcomp(t(DGEdat.cpm$counts))); pc.data
+plot(out) #theres a lot of variation in the data
+
+DGEdat_PCcor <- lapply(DGEdat.cpm$samples[,c(6:7,9,11,13,15)], as.factor)
+# DGEdat_PCcor$timepoint <- factor(DGEdat_PCcor$timepoint, levels = c("TP1", "TP3", "TP4", "TP5", "TP6", "TP7", "TP8", "TP9"))
+DGEdat_PCcor <- as.data.frame(DGEdat_PCcor)
+rownames(DGEdat_PCcor) <- DGEdat.cpm$samples$sample
+DGEdat_PCcor <- cbind(lib.size = DGEdat.cpm$samples$lib.size, DGEdat_PCcor)
+
+pc_cor<-cbind(scores(out), DGEdat_PCcor)
+pc.data
+kruskal.test(PC1 ~ treatment, data = pc_cor)
+kruskal.test(PC3 ~ treatment, data = pc_cor)
+
+kruskal.test(PC2 ~ timepoint, data = pc_cor)
+kruskal.test(PC7 ~ timepoint, data = pc_cor)
+
+kruskal.test(PC4 ~ reef, data = pc_cor)
+kruskal.test(PC18 ~ reef, data = pc_cor)
+kruskal.test(PC23 ~ reef, data = pc_cor)
+# pairwise.wilcox.test(pc_cor$PC2,pc_cor$timepoint,
+#                  p.adjust.method = "BH")
+```
+Visualize first two principle coordinates
+```{r}
+percentVar <- pca$sdev^2/sum(pca$sdev^2) #save % variation by PC1 and PC2
+d1 <- data.frame(PC1 = pca$x[, 1], PC3 = pca$x[, 3], Group = DGEdat.cpm$samples$treatment, #make a dataframe containing all plotting info
+                DGEdat.cpm$samples, name = colnames(DGEdat.cpm$counts))
+ggplot(data = d1, aes_string(x = "PC1", y = "PC3", colour = "treatment")) + 
+  geom_point(size = 3) + 
+  xlab(paste0("PC1: ", round(percentVar[1] * 100), "% variance")) + 
+  ylab(paste0("PC3: ", round(percentVar[3] * 100), "% variance")) + 
+  coord_fixed() + 
+  theme_bw() + #Set background color
+  theme(panel.border = element_blank(), # Set border
+        panel.grid.major = element_blank(), #Set major gridlines
+        panel.grid.minor = element_blank(), #Set minor gridlines
+        axis.line = element_line(colour = "black", size = 0.6), #Set axes color
+        plot.background=element_blank(), #Set the plot background
+        axis.title = element_text(size = 14), #Axis title size
+        axis.text = element_blank()) #Axis text size and view plot
+#ggsave("Output/NEW_1a-edgeR-allsamples-allgenes-PCA.png", allgenes_PCA)
+
+d2 <- data.frame(PC2 = pca$x[, 2], PC7 = pca$x[, 7], Group = DGEdat.cpm$samples$timepoint, #make a dataframe containing all plotting info
+                DGEdat.cpm$samples, name = colnames(DGEdat.cpm$counts))
+ggplot(data = d2, aes_string(x = "PC2", y = "PC7", colour = "timepoint")) + 
+  geom_point(size = 3) + 
+  xlab(paste0("PC2: ", round(percentVar[2] * 100), "% variance")) + 
+  ylab(paste0("PC7: ", round(percentVar[7] * 100), "% variance")) + 
+  coord_fixed() + 
+  theme_bw() + #Set background color
+  theme(panel.border = element_blank(), # Set border
+        panel.grid.major = element_blank(), #Set major gridlines
+        panel.grid.minor = element_blank(), #Set minor gridlines
+        axis.line = element_line(colour = "black", size = 0.6), #Set axes color
+        plot.background=element_blank(), #Set the plot background
+        axis.title = element_text(size = 14), #Axis title size
+        axis.text = element_blank()) #Axis text size and view plot
+
+d3 <- data.frame(PC4 = pca$x[, 4], PC18 = pca$x[, 18], Group = DGEdat.cpm$samples$reef, #make a dataframe containing all plotting info
+                DGEdat.cpm$samples, name = colnames(DGEdat.cpm$counts))
+ggplot(data = d3, aes_string(x = "PC4", y = "PC18", colour = "reef")) + 
+  geom_point(size = 3) + 
+  xlab(paste0("PC4: ", round(percentVar[4] * 100), "% variance")) + 
+  ylab(paste0("PC18: ", round(percentVar[18] * 100), "% variance")) + 
+  coord_fixed() + 
+  theme_bw() + #Set background color
+  theme(panel.border = element_blank(), # Set border
+        panel.grid.major = element_blank(), #Set major gridlines
+        panel.grid.minor = element_blank(), #Set minor gridlines
+        axis.line = element_line(colour = "black", size = 0.6), #Set axes color
+        plot.background=element_blank(), #Set the plot background
+        axis.title = element_text(size = 14), #Axis title size
+        axis.text = element_blank()) #Axis text size and view plot
+d4 <- data.frame(PC1 = pca$x[, 1], PC2 = pca$x[, 2], Group = DGEdat.cpm$samples$treatment, #make a dataframe containing all plotting info
+                DGEdat.cpm$samples, name = colnames(DGEdat.cpm$counts))
+ggplot(data = d4, aes_string(x = "PC1", y = "PC2", colour = "timepoint", shape="treatment")) + 
+  geom_point(size = 3) + 
+  xlab(paste0("PC1: ", round(percentVar[1] * 100), "% variance")) + 
+  ylab(paste0("PC2: ", round(percentVar[2] * 100), "% variance")) + 
+  coord_fixed() + 
+  theme_bw() + #Set background color
+  theme(panel.border = element_blank(), # Set border
+        panel.grid.major = element_blank(), #Set major gridlines
+        panel.grid.minor = element_blank(), #Set minor gridlines
+        axis.line = element_line(colour = "black", size = 0.6), #Set axes color
+        plot.background=element_blank(), #Set the plot background
+        axis.title = element_text(size = 14), #Axis title size
+        axis.text = element_blank()) #Axis text size and view plot
+
+```
+
+
+
+Plot as a dendrogram
+```{r}
+tree <- hclust(dist(as.matrix(t(DGEdat.cpm$counts))))
+dend <- as.dendrogram(tree)
+#pdf("Output/NEW_tree_SNPs_allsamples-allgenes-.pdf", height = 3, width = 20)
+plot(dend)
+#dev.off()
+```
+
+There don't look to be any outliers. 
+
+##  5. Differential gene expression analysis for Diploids versus Triploids
+
+Creating the design matrix
+```{r}
+Treatment <- factor(DGEdat$samples$group)
+Group <- factor(DGEdat$samples$group.1)
+design <- model.matrix(~0+Treatment)
+# colnames(design) <- levels(DGEdat$samples$group)
+head(design); dim(design)
+```
+
+Estimate dispersion and fit a glmQL model
+```{r}
+DGEdat <- estimateDisp(DGEdat, design, robust=TRUE)
+fit <- glmQLFit(DGEdat, design, robust=TRUE)
+head(fit$coefficients)
+plotQLDisp(fit)
+```
+
+Set contrasts
+```{r}
+test <- makeContrasts(TreatmentHot - TreatmentAmb, levels = design)
+res <- glmQLFTest(fit, contrast = test)
+topTags(res)
+T1.de <- decideTestsDGE(res, adjust.method="BH", p.value=0.05, lfc=2)
+summary(T1.de)
+DEGtable <- res$table[T1.de!=0,]
+DEGtable$contrast <- "Hot_v_Amb"
+DEGtable$gene_id  <- rownames(DEGtable)
+rownames(DEGtable) <- NULL
+DEGtable <- cbind(DEGtable, cluster=ifelse(DEGtable$logFC>0, "Up", "Down"))
+write_csv(DEGtable[,c(6,1:5,7)], "Output/Groups236_treatment_DEGs.csv", col_names = T)
+dim(DEGtable)
+```
+
+### Plot a heatmap of differentially-expressed genes
+
+We will now transform them with cpm for plotting
+```{r}
+gcount.cpm <- cpm(gcount, log=TRUE, prior.count=5)
+DEGcounts.cpm <- gcount.cpm[DEGtable$gene_id, ]
+dim(DEGcounts.cpm)
+```
+
+Make a heatmap 
+```{r}
+mat <- as.data.frame(DEGcounts.cpm - rowMeans(DEGcounts.cpm))
+hmTreatment <- subset(DGEdat$samples, select=c("treatment","group.1"))
+names(hmTreatment) <- c("treatment", "group.1")
+hm_ann_col <- HeatmapAnnotation(df=hmTreatment, 
+                                col = list(treatment = c("Amb" = "#1b9e77", "Hot" = "#d95f02"),
+                                           group.1 = c("Group2" = "#33a02c", "Group3" = "#c51b7d", "Group6" = "#e31a1c")
+                                           )
+                                ) #make dataframe for column naming
+
+DEGheatmap <-  Heatmap(as.matrix(mat),
+        name = "Gene expression (cpm)", 
+        show_row_names = FALSE, 
+        top_annotation = hm_ann_col, 
+        #right_annotation = hm_ann_row, 
+        show_column_names = TRUE, row_dend_side = "left" ,
+        #column_split = 4, 
+        column_dend_height = unit(0.5, "in"),
+        #km = 2, row_km_repeats = 100, 
+        #row_title =  c("Underexpressed in Triploids", "Overexpressed in Triploid Clade 2", "Overexpressed in Triploid Clade 1", "Overexpressed in Triploids"),
+        row_title_side = "right", row_title_rot = 0, row_dend_reorder = TRUE, 
+        row_gap = unit(2.5, "mm"), border = TRUE,
+        column_names_gp =  gpar(fontsize = 10))
+
+pdf("Output/NEW_1a-edgeR-Groups236-Treatment-DEG-heatmap.pdf", width = 10.5, height = 7)
+draw(DEGheatmap)
+dev.off()
+```
+
+### Principle components plot of DEGs
+```{r}
+pca <- prcomp(t(DEGcounts.cpm)) #calculate eigengenes
+
+percentVar <- pca$sdev^2/sum(pca$sdev^2) #save % variation by PC1 and PC2
+d6 <- data.frame(PC1 = pca$x[, 1], PC2 = pca$x[, 2], Treatment = as.factor(DGEdat.cpm$samples$treatment), Group = as.factor(DGEdat.cpm$samples$group.1), #make a dataframe containing all plotting info
+                DGEdat.cpm$samples, name = colnames(DGEdat.cpm$counts))
+DEG_PCA <- ggplot(data = d6, aes_string(x = "PC1", y = "PC2")) + 
+  geom_point(size = 4, aes(colour=Treatment, shape=Group)) + 
+  xlab(paste0("PC1: ", round(percentVar[1] * 100), "% variance")) + 
+  ylab(paste0("PC2: ", round(percentVar[2] * 100), "% variance")) + 
+  coord_fixed() + 
+  theme_bw() + #Set background color
+  theme(panel.border = element_blank(), # Set border
+        panel.grid.major = element_blank(), #Set major gridlines
+        panel.grid.minor = element_blank(), #Set minor gridlines
+        axis.line = element_line(colour = "black", size = 0.6), #Set axes color
+        plot.background=element_blank(), #Set the plot background
+        axis.title = element_text(size = 14), #Axis title size
+        axis.text = element_blank());DEG_PCA #Axis text size and view plot
+ggsave("Output/NEW_1a-edgeR-Ploidy-DEG-PCA.png", DEG_PCA)
+
+
+
+pc.data <- summary(out<-prcomp(t(DEGcounts.cpm))); pc.data
+plot(out) #theres a lot of variation in the data
+DGEdat_PCcor <- lapply(d6[,c(3,4,11,13,15)], as.factor)
+DGEdat_PCcor <- as.tibble(lapply(DGEdat_PCcor, as.numeric))
+DGEdat_PCcor <- as_data_frame(DGEdat_PCcor)
+rownames(DGEdat_PCcor) <- d6$sample
+all<-cbind(scores(out), DGEdat_PCcor)
+correlations<-round(cor(all, method = "spearman"), digits=2)
+plot(correlations)
+pc.data
+```

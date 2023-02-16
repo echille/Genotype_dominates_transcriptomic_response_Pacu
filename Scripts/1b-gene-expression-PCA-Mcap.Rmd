@@ -160,7 +160,8 @@ allgenes_PCA <- ggplot(data = d, aes_string(x = "PC2", y = "PC8")) +
         axis.line = element_line(colour = "black", size = 0.6), #Set axes color
         plot.background=element_blank(), #Set the plot background
         axis.title = element_text(size = 14), #Axis title size
-        axis.text = element_blank()); allgenes_PCA #Axis text size and view plot
+        #axis.text = element_blank()
+        ); allgenes_PCA #Axis text size and view plot
 
 ggsave("Output/1b-Mcap-edgeR-allsamples-allgenes-PCA.pdf", allgenes_PCA)
 ```
@@ -237,7 +238,7 @@ hmTreatment <- subset(DGEdat$samples, select=c("Temperature"))
 hm_ann_col <- HeatmapAnnotation(df=hmTreatment, col = list(Temperature = c("Amb" = "#1b9e77", "Hot" = "#d95f02"))) #make dataframe for column naming
 dend = cluster_within_group(mat, hmTreatment$Temperature)
 
-DEGheatmap <-  Heatmap(mat, cluster_columns = dend, column_split = 3,
+DEGheatmap <-  Heatmap(mat, cluster_columns = dend, column_split = 2,
         name = "Gene expression (cpm)", 
         show_row_names = FALSE, 
         top_annotation = hm_ann_col, 
