@@ -1,0 +1,1 @@
+../../Triploid-Pacu-Gene-Dosage/Genome_Info/Pocillopora_acuta_KBHIv2.gentrome.fa.gz.salmon.elen.matrix.txt

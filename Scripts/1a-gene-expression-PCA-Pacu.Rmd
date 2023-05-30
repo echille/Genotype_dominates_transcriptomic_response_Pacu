@@ -23,7 +23,6 @@ library(vegan, quietly = TRUE)
 library(Dune, quietly = TRUE)
 library(ggplot2, quietly = TRUE) #ggplot2-v3.3.5
 library(tidyverse, quietly = TRUE) #tidyverse-v1.3.1
-library(ComplexHeatmap, quietly = TRUE)
 ```
 
 Load the input file containing the treatment information
@@ -165,106 +164,4 @@ plot(dend)
 #dev.off()
 ```
 
-There don't look to be any outliers. 
-
-##  5. Differential gene expression analysis for Diploids versus Triploids
-
-Creating the design matrix
-```{r}
-design <- model.matrix(~0+DGEdat$samples$group)
-levels(DGEdat$samples$group)
-colnames(design) <- levels(DGEdat$samples$group)
-head(design); dim(design)
-```
-
-Estimate dispersion and fit a glmQL model
-```{r}
-DGEdat <- estimateDisp(DGEdat, design, robust=TRUE)
-fit <- glmQLFit(DGEdat, design, robust=TRUE)
-head(fit$coefficients)
-plotQLDisp(fit)
-```
-
-Set contrasts
-```{r}
-test <- makeContrasts(Hot - Amb, levels = design)
-res <- glmQLFTest(fit, contrast = test)
-topTags(res)
-T1.de <- decideTestsDGE(res, adjust.method="BH", p.value=0.05, lfc=2)
-summary(T1.de)
-DEGtable <- res$table[T1.de!=0,]
-DEGtable$gene_id  <- rownames(DEGtable)
-rownames(DEGtable) <- NULL
-DEGtable <- cbind(DEGtable, cluster=ifelse(DEGtable$logFC>0, "Up", "Down"))
-# write_csv(DEGtable[,c(6,1:5,7)], "Output/Supplementary_table_ploidy_DEGs.csv", col_names = T)
-```
-
-
-##  6. Explore and visualize results
-
-```{r}
-plotMD(res)
-```
-
-
-### Plot a heatmap of differentially-expressed genes
-
-We will now transform them with cpm for plotting
-```{r}
-gcount.cpm <- cpm(gcount, log=TRUE, prior.count=5)
-DEGcounts.cpm <- gcount.cpm[DEGtable$gene_id, ]
-dim(DEGcounts.cpm)
-```
-
-We will now transform them with cpm for plotting
-```{r}
-gcount.cpm <- cpm(gcount, log=TRUE, prior.count=5)
-DEGcounts.cpm <- gcount.cpm[DEGtable$gene_id, ]
-dim(DEGcounts.cpm)
-```
-
-Make a heatmap 
-```{r}
-mat <- as.matrix(DEGcounts.cpm - rowMeans(DEGcounts.cpm))
-hmTreatment <- subset(DGEdat$samples, select=c("temp"))
-hm_ann_col <- HeatmapAnnotation(df=hmTreatment, col = list(temp = c("Amb" = "#1b9e77", "Hot" = "#d95f02"))) #make dataframe for column naming
-dend = cluster_within_group(mat, hmTreatment$temp)
-
-DEGheatmap <-  Heatmap(mat, cluster_columns = dend, column_split = 2,
-        name = "Gene expression (cpm)", 
-        show_row_names = FALSE, 
-        top_annotation = hm_ann_col, 
-        show_column_names = FALSE, row_dend_side = "left" ,
-        column_dend_height = unit(0.5, "in"),
-        row_title_side = "right", row_title_rot = 0, row_dend_reorder = TRUE, 
-        row_gap = unit(2.5, "mm"), border = TRUE,
-        column_names_gp =  gpar(fontsize = 10))
-
-pdf("Output/1a-Pacu-edgeR-Treatment-DEG-heatmap.pdf", width = 10.5, height = 7)
-draw(DEGheatmap)
-dev.off()
-```
-
-
-### Principle components plot of DEGs
-```{r}
-pca <- prcomp(t(DEGcounts.cpm)) #calculate eigengenes
-id=
-percentVar <- pca$sdev^2/sum(pca$sdev^2) #save % variation by PC1 and PC2
-d6 <- data.frame(PC1 = pca$x[, 1], PC2 = pca$x[, 2], temp = as.factor(DGEdat.cpm$samples$temp), Group = as.factor(DGEdat.cpm$samples$temp), #make a dataframe containing all plotting info
-                DGEdat.cpm$samples, name = colnames(DGEdat.cpm$counts))
-DEG_PCA <- ggplot(data = d6, aes_string(x = "PC1", y = "PC2")) + 
-  geom_point(size = 4, aes(colour=temp)) + 
-  xlab(paste0("PC1: ", round(percentVar[1] * 100), "% variance")) + 
-  ylab(paste0("PC2: ", round(percentVar[2] * 100), "% variance")) + 
-  coord_fixed() + 
-  theme_bw() + #Set background color
-  theme(panel.border = element_blank(), # Set border
-        panel.grid.major = element_blank(), #Set major gridlines
-        panel.grid.minor = element_blank(), #Set minor gridlines
-        axis.line = element_line(colour = "black", size = 0.6), #Set axes color
-        plot.background=element_blank(), #Set the plot background
-        axis.title = element_text(size = 14), #Axis title size
-        axis.text = element_blank());DEG_PCA #Axis text size and view plot
-ggsave("Output/1a-Pacu-edgeR-allsamples-DEGs-PCA.pdf", DEG_PCA)
-```
+1416 is an outlier and will be removed from DGE analysis.

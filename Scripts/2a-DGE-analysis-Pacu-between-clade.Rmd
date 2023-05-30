@@ -1,0 +1,213 @@
+---
+title: "2b) Mcap Differential Gene Expression analysis"
+output:
+  pdf_document: default
+  html_notebook: default
+---
+
+```{r setup, include=FALSE}
+rm(list = ls()) #clear environment
+```
+
+*Note: Open Rproj first, then script. To easily use relative paths, click the down button next to knit and then click "Knit Directory --> Project Directory". This should make loading and saving files much easier.*
+
+## 1. Load packages and input data
+
+Load packages
+```{r, message=FALSE, warning=FALSE}
+# library(edgeR, quietly = TRUE) #edgeR-v3.30.3
+# library(vegan, quietly = TRUE)
+# library(Dune, quietly = TRUE)
+# library(ggplot2, quietly = TRUE) #ggplot2-v3.3.5
+library(tidyverse, quietly = TRUE) #tidyverse-v1.3.1
+library(UpSetR, quietly = TRUE)
+# library(reshape2, quietly = TRUE)
+# library(factoextra, quietly = TRUE)
+# library(NbClust, quietly = TRUE)
+library(ComplexHeatmap, quietly = TRUE)
+library(DESeq2, quietly = TRUE)
+library(genefilter, quietly = TRUE)
+library(magick, quietly=TRUE)
+```
+Differential gene expression analysis for Pocillopora acuta with DESeq2
+
+##### Construct the DESeq dataset
+
+Load the input file containing the treatment information
+```{r}
+treatmentinfo <- read.csv("Sample_Info/samples_Pacuta.annotations.txt", header = TRUE, sep = "\t", fileEncoding="UTF-8-BOM") #read in file
+treatmentinfo$timepoint <- factor(treatmentinfo$timepoint, levels = c("TP1", "TP3","TP4","TP5","TP6","TP7","TP8","TP9","TP10","TP11"))
+top3groups <- c("Group2", "Group3", "Group6")
+treatmentinfo <- filter(treatmentinfo, group%in%top3groups)
+table(treatmentinfo$group)
+```
+
+Load the input file containing the gene count matrix
+```{r}
+#gene count matrix
+gcount <- as.data.frame(read_delim("Genome_Info/Pocillopora_acuta_KBHIv2.gentrome.fa.gz.salmon.numreads.matrix", delim = "\t", col_names = TRUE, show_col_types = FALSE), fileEncoding="UTF-8-BOM") #read in file
+rownames(gcount) <- gcount$Name #makes "Name" the rowname
+gcount <- gcount[,-c(1)] #drops the "Name" column
+gcount <- round(gcount) #round 
+dim(gcount); head(gcount)[,1:3] #view dataset attributes
+gcount <- gcount[,treatmentinfo$sample]
+```
+
+```{r}
+#create filter for the counts data
+filt <- filterfun(pOverA(0.5,10))
+gfilt <- genefilter(gcount, filt)
+#identify genes to keep by count filter
+keep <- gcount[gfilt,]
+#identify gene lists
+keep <- rownames(keep)
+#gene count data filtered in PoverA, P percent of the samples have counts over A
+gcount_filt <- as.data.frame(gcount[which(rownames(gcount) %in% keep),])
+dim(gcount_filt)
+```
+
+
+Create a DESeqDataSet design from gene count matrix and labels. Here we set the design to look at the interaction of time_point and treatment to test for any differences in gene expression across timepoints attributed to treatment.
+```{r}
+#Set DESeq2 design
+gdds <- DESeqDataSetFromMatrix(countData = as.data.frame(gcount_filt),
+                              colData = treatmentinfo,
+                              design = ~group)
+```
+
+#### Differential Gene Expression Analysis
+
+##### Run DE analysis
+
+Run differential expression test using a Wald model. 
+```{r, message = FALSE}
+DEG <- DESeq(gdds) #run differential expression test by group using the Wald model
+```
+
+Explore significant p-values for temp (Hot vs Amb)
+```{r, message = FALSE}
+trip.DEG.results <- results(DEG, contrast= c("group","Group3","Group2"),lfcThreshold=log2(1.5))
+head(trip.DEG.results)
+sum(trip.DEG.results$padj < 0.05, na.rm=TRUE)
+trip.DEGs <- as.data.frame(subset(trip.DEG.results, padj<0.05))
+results.ordered <- order(trip.DEGs$padj) #Order p-values by smallest value first
+trip.DEGs$gene_id  <- rownames(trip.DEGs)
+trip.DEGs$contrast  <- "Group3_v_Group2"
+rownames(trip.DEGs) <- NULL
+
+G2vG6.DEG.results <- results(DEG, contrast= c("group","Group2","Group6"),lfcThreshold=log2(1.5))
+head(G2vG6.DEG.results)
+sum(G2vG6.DEG.results$padj < 0.05, na.rm=TRUE)
+G2vG6.DEGs <- as.data.frame(subset(G2vG6.DEG.results, padj<0.05))
+results.ordered <- order(G2vG6.DEGs$padj) #Order p-values by smallest value first
+G2vG6.DEGs$gene_id  <- rownames(G2vG6.DEGs)
+G2vG6.DEGs$contrast  <- "Group2_v_Group6"
+rownames(G2vG6.DEGs) <- NULL
+
+G3vG6.DEG.results <- results(DEG, contrast= c("group","Group3","Group6"),lfcThreshold=log2(1.5))
+head(G3vG6.DEG.results)
+sum(G3vG6.DEG.results$padj < 0.05, na.rm=TRUE)
+G3vG6.DEGs <- as.data.frame(subset(G3vG6.DEG.results, padj<0.05))
+results.ordered <- order(G3vG6.DEGs$padj) #Order p-values by smallest value first
+G3vG6.DEGs$gene_id  <- rownames(G3vG6.DEGs)
+G3vG6.DEGs$contrast  <- "Group3_v_Group6"
+rownames(G3vG6.DEGs) <- NULL
+```
+
+Write and save differential expression information
+```{r}
+DEGs <- rbind(trip.DEGs, G2vG6.DEGs, G3vG6.DEGs)
+write.csv(DEGs, "Output/2a-Pacu-group-DEGs.csv")
+
+up.DEGs <- filter(DEGs, log2FoldChange>0)
+up.DEGs$contrast <- paste0("Up.",up.DEGs$contrast,sep="")
+down.DEGs <- filter(DEGs, log2FoldChange<0)
+down.DEGs$contrast <- paste0("Down.",down.DEGs$contrast,sep="")
+dir.DEGs <- rbind(up.DEGs, down.DEGs)
+```
+
+We will now transform them with cpm for plotting
+Subset the gene count matrix by the list of DEGs
+```{r}
+DEGlist <- gdds[unique(DEGs$gene_id),]
+```
+
+We know from before that our size factors are all less than 4, so we can use VST!
+```{r}
+DEGvst <- vst(DEGlist, blind=FALSE, nsub = nrow(counts(DEGlist)), fitType = "local") #apply a variance stabilizing transforamtion to minimize efplncts of small counts and normalize wrt library size
+head(assay(DEGvst))[,3] #view transformed gene count data
+dim(assay(DEGvst))
+```
+
+Make a matrix for computing similarity
+```{r}
+mat <- assay(DEGvst)#[topVarGenes, ] #make an expression object
+mat <- mat - rowMeans(mat) #difference in expression compared to average across all samples
+```
+
+Make a heatmap 
+```{r}
+hmgroup <- subset(treatmentinfo, select=c("group"))
+hm_ann_col <- HeatmapAnnotation(df=hmgroup, col = list(group = c("Group2" = "#FFBD5C", "Group3" = "#B873FF", "Group6" = "#4EB900"))) #make dataframe for column naming
+dend = cluster_within_group(mat, hmgroup$group)
+
+DEGheatmap <-  Heatmap(mat, cluster_columns = dend, 
+                       column_split = 3,
+                       name = "Gene expression (vst)", 
+                       show_row_names = F,
+                       top_annotation = hm_ann_col, 
+                       show_column_names = F, row_dend_side = "left" ,
+                       column_dend_height = unit(0.5, "in"),
+                       row_title_side = "right", row_title_rot = 0, row_dend_reorder = TRUE,
+                       column_names_gp =  gpar(fontsize = 10),
+                       use_raster=T); draw(DEGheatmap)
+
+pdf("Output/2a-Pacu-group-DEG-heatmap.pdf", width = 10.5, height = 7)
+draw(DEGheatmap)
+dev.off()
+```
+
+
+### Principle components plot of DEGs
+```{r}
+pca <- prcomp(t(mat)) #calculate eigengenes
+percentVar <- pca$sdev^2/sum(pca$sdev^2) #save % variation by PC1 and PC2
+d6 <- data.frame(treatmentinfo, PC1 = pca$x[, 1], PC2 = pca$x[, 2])
+DEG_PCA <- ggplot(data = d6, aes_string(x = "PC1", y = "PC2")) + 
+  geom_point(size = 4, aes(colour=group)) + 
+  xlab(paste0("PC1: ", round(percentVar[1] * 100), "% variance")) + 
+  ylab(paste0("PC2: ", round(percentVar[2] * 100), "% variance")) + 
+  coord_fixed() + 
+  theme_bw() + #Set background color
+  theme(panel.border = element_blank(), # Set border
+        panel.grid.major = element_blank(), #Set major gridlines
+        panel.grid.minor = element_blank(), #Set minor gridlines
+        axis.line = element_line(colour = "black", size = 0.6), #Set axes color
+        plot.background=element_blank(), #Set the plot background
+        axis.title = element_text(size = 14), #Axis title size
+        axis.text = element_blank());DEG_PCA #Axis text size and view plot
+ggsave("Output/2a-Pacu-group-DEGs-PCA.pdf", DEG_PCA)
+```
+
+Upset plot of DEG expression
+```{r}
+sets <- data_frame("gene_id"=dir.DEGs$gene_id, "set"=dir.DEGs$contrast)
+sets <- sets %>% 
+  pivot_wider(id_cols = gene_id,
+              names_from = set, 
+              values_from = set,
+              values_fn = list(set = length),
+              values_fill = list(set = 0))
+sets_1 <- sets[,-1]
+sets_1 <- as.data.frame(lapply(sets_1, as.numeric))
+upset <- upset(sets_1,
+  nsets = 6, number.angles = 30, point.size = 3.5, line.size = 2,
+  mainbar.y.label = "Number of DEGs between P. acuta groups", sets.x.label = "Total Genes", 
+  order.by = "freq", keep.order = FALSE, show.numbers = "yes", sets.bar.color = "blueviolet", 
+  shade.color = "slategrey"
+  ); upset
+
+pdf("Output/2a-Pacu-group-DEG-upset.pdf")
+upset
+dev.off()
+```
