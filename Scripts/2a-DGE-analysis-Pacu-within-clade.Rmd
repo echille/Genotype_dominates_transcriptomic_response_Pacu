@@ -1,5 +1,5 @@
 ---
-title: "2b) Mcap Differential Gene Expression analysis"
+title: "2b) Pacu Differential Gene Expression analysis treatment within clade"
 output:
   pdf_document: default
   html_notebook: default
@@ -37,8 +37,8 @@ Load the input file containing the treatment information
 treatmentinfo <- read.csv("Sample_Info/samples_Pacuta.annotations.txt", header = TRUE, sep = "\t", fileEncoding="UTF-8-BOM") #read in file
 treatmentinfo$timepoint <- factor(treatmentinfo$timepoint, levels = c("TP1", "TP3","TP4","TP5","TP6","TP7","TP8","TP9","TP10","TP11"))
 top3groups <- c("Group2", "Group3", "Group6")
-top3tps <- c("TP3","TP4","TP5")
-treatmentinfo <- filter(treatmentinfo, group%in%top3groups, timepoint%in%top3tps)
+# top3tps <- c("TP3","TP4","TP5")
+treatmentinfo <- filter(treatmentinfo, group%in%top3groups) #, timepoint%in%top3tps)
 table(treatmentinfo$group, treatmentinfo$temp)
 ```
 
@@ -47,6 +47,8 @@ Merge the temp and time_point columns into a new column , group. Set group as a 
 ```{r}
 g2.treatmentinfo <- filter(treatmentinfo, group=="Group2")
 g2.treatmentinfo$temp <- factor(g2.treatmentinfo$temp, levels = c("Amb","Hot"))
+g2.treatmentinfo <- filter(g2.treatmentinfo, timepoint=="TP9")
+table(g2.treatmentinfo$timepoint, g2.treatmentinfo$temp)
 ```
 
 Load the input file containing the gene count matrix
@@ -96,11 +98,19 @@ Explore significant p-values for temp (Hot vs Amb)
 DEG.results <- results(DEG, contrast= c("temp","Hot","Amb"),lfcThreshold=log2(1.5))
 head(DEG.results)
 sum(DEG.results$padj < 0.05, na.rm=TRUE)
-results <- as.data.frame(subset(DEG.results))
-# results.ordered <- order(DEGs$padj) #Order p-values by smallest value first
-# DEGs$gene_id  <- rownames(DEGs)
-# rownames(DEGs) <- NULL
-# write.csv(DEGs, "Output/1b-Pacu-1week-Temp-DEGs.csv")
+DEGs <- as.data.frame(subset(DEG.results, padj<0.05))
+results.ordered <- order(DEGs$padj) #Order p-values by smallest value first
+DEGs$gene_id  <- rownames(DEGs)
+DEGs$contrast  <- "Group2, Timepoint 9, Hot_v_Amb"
+rownames(DEGs) <- NULL
+write.csv(DEGs, "Output/1b-Pacu-G2-TP9-Temp-DEGs.csv")
+```
+
+We will now transform them with cpm for plotting
+Subset the gene count matrix by the list of DEGs
+```{r}
+topVarGenes <- filter(DEGs, log2FoldChange>2|log2FoldChange<(-2))
+DEGlist <- gdds[DEGs$gene_id,]
 ```
 
 We will now transform them for plotting.
@@ -113,8 +123,29 @@ dim(assay(DEGvst))
 
 Make a matrix for computing similarity
 ```{r}
-mat <- assay(DEGvst)#[topVarGenes, ] #make an expression object
+mat <- assay(DEGvst)[topVarGenes$gene_id, ] #make an expression object
 mat <- mat - rowMeans(mat) #difference in expression compared to average across all samples
+```
+
+Make a heatmap 
+```{r}
+hmTreatment <- subset(g2.treatmentinfo, select=c("temp"))
+hm_ann_col <- HeatmapAnnotation(df=hmTreatment, col = list(temp = c("Amb" = "#1b9e77", "Hot" = "#d95f02"))) #make dataframe for column naming
+dend = cluster_within_group(mat, hmTreatment$temp)
+
+DEGheatmap <-  Heatmap(mat, cluster_columns = dend, column_split = 2,
+        name = "Gene expression (vst)", 
+        show_row_names = F, 
+        top_annotation = hm_ann_col, 
+        show_column_names = T, row_dend_side = "left" ,
+        column_dend_height = unit(0.5, "in"),
+        row_title_side = "right", row_title_rot = 0, row_dend_reorder = TRUE, 
+        row_gap = unit(2.5, "mm"), border = TRUE,
+        column_names_gp =  gpar(fontsize = 10)); DEGheatmap
+
+pdf("Output/1b-Pacu-G2-TP9-Temp-DEG-heatmap.pdf", width = 10.5, height = 7)
+draw(DEGheatmap)
+dev.off()
 ```
 
 ### Principle components plot of DEGs
@@ -135,7 +166,7 @@ DEG_PCA <- ggplot(data = d6, aes_string(x = "PC1", y = "PC2")) +
         plot.background=element_blank(), #Set the plot background
         axis.title = element_text(size = 14), #Axis title size
         axis.text = element_blank());DEG_PCA #Axis text size and view plot
-# ggsave("Output/1b-Mcap-edgeR-allsamples-DEGs-PCA.pdf", DEG_PCA)
+# ggsave("Output/1b-Pacu-G2-TP9-Temp-DEGs-PCA.pdf", DEG_PCA)
 ```
 
 ##Group3
@@ -143,6 +174,7 @@ Merge the temp and time_point columns into a new column , group. Set group as a 
 ```{r}
 g3.treatmentinfo <- filter(treatmentinfo, group=="Group3")
 g3.treatmentinfo$temp <- factor(g3.treatmentinfo$temp, levels = c("Amb","Hot"))
+table(g3.treatmentinfo$timepoint, g3.treatmentinfo$temp)
 ```
 
 Load the input file containing the gene count matrix
@@ -234,6 +266,7 @@ Merge the temp and time_point columns into a new column , group. Set group as a 
 ```{r}
 g6.treatmentinfo <- filter(treatmentinfo, group=="Group6")
 g6.treatmentinfo$temp <- factor(g6.treatmentinfo$temp, levels = c("Amb","Hot"))
+table(g6.treatmentinfo$timepoint, g6.treatmentinfo$temp)
 ```
 
 Load the input file containing the gene count matrix
