@@ -117,13 +117,15 @@ rownames(G3vG6.DEGs) <- NULL
 Write and save differential expression information
 ```{r}
 DEGs <- rbind(trip.DEGs, G2vG6.DEGs, G3vG6.DEGs)
-write.csv(DEGs, "Output/2a-Pacu-group-DEGs.csv")
+
 
 up.DEGs <- filter(DEGs, log2FoldChange>0)
 up.DEGs$contrast <- paste0("Up.",up.DEGs$contrast,sep="")
 down.DEGs <- filter(DEGs, log2FoldChange<0)
 down.DEGs$contrast <- paste0("Down.",down.DEGs$contrast,sep="")
+
 dir.DEGs <- rbind(up.DEGs, down.DEGs)
+write.csv(dir.DEGs, "Output/2a-Pacu-group-DEGs.csv")
 ```
 
 We will now transform them with cpm for plotting

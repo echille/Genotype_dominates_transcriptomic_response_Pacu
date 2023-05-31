@@ -35,8 +35,6 @@ Differential gene expression analysis for Montipora capitata with DESeq2
 Load the input file containing the treatment information
 ```{r}
 treatmentinfo <- read.csv("Sample_Info/samples_Pacuta.annotations.txt", header = TRUE, sep = "\t", fileEncoding="UTF-8-BOM") #read in file
-#top3groups <- c("Group2", "Group3", "Group6")
-#treatmentinfo <- filter(treatmentinfo, group%in%top3groups)
 table(treatmentinfo$group)
 ```
 
@@ -45,6 +43,7 @@ Merge the treatment and time_point columns into a new column , group. Set group 
 ```{r}
 treatmentinfo <- filter(treatmentinfo, treatment%in%c("ATAC", "HTAC") & timepoint=="TP6")
 treatmentinfo$treatment <- factor(treatmentinfo$treatment, levels = c("ATAC","HTAC"))
+table(treatmentinfo$treatment, treatmentinfo$group)
 ```
 
 Load the input file containing the gene count matrix
