@@ -182,5 +182,5 @@ DEG_PCA <- ggplot(data = d6, aes_string(x = "PC1", y = "PC2")) +
         plot.background=element_blank(), #Set the plot background
         axis.title = element_text(size = 14), #Axis title size
         axis.text = element_blank());DEG_PCA #Axis text size and view plot
-# ggsave("Output/1b-Pacu-G2-TP9-Temp-DEGs-PCA.pdf", DEG_PCA)
-``
+ggsave("Output/1b-Pacu-G2-TP9-Temp-DEGs-PCA.pdf", DEG_PCA)
+```

@@ -1,12 +1,12 @@
 ---
-title: "Differential Expression Across Ploidy Groups"
+title: "Gene Ontology Categorization of DEGs between Pacuta Groups"
 author: "Erin Chille"
-date: "Last updated 2021/09/09"
 output: html_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+rm(list = ls()) #clear environment
 ```
 
 ---
@@ -17,15 +17,11 @@ knitr::opts_chunk$set(echo = TRUE)
 
 Load libraries
 ```{r, message=FALSE, warning=FALSE}
-library("genefilter")
-library("DESeq2")
-library("ComplexHeatmap")
 library("tidyverse")
 library("RColorBrewer")
 library("ggplot2")
 library("goseq")
 library("gridExtra")
-library("VennDiagram")
 library("patchwork")
 library("BiocParallel")
 library("GSEABase")
@@ -37,102 +33,88 @@ library("cowplot")
 
 Load transcript annotations and transcript length information
 ```{r}
-#cluster.df <- read_tsv( "C:\\Users\\19dee\\OneDrive\\Documents\\GitHub\\Triploid-Pacu-Gene-Dosage\\Output\\Supplementary_table_all_DEGs.txt") #biological annotation information
-cluster.df <- read_csv( "Output/NEW_Supplementary_table_all_DEGs.csv", show_col_types = FALSE)
-cluster.df <- cluster.df[, c(1,8)]
-colnames(cluster.df) <- c("gene_id", "Cluster")
-names(cluster.df)
-str(cluster.df)
+cluster.df <- read_csv( "Output/2a-Pacu-group-DEGs.csv", show_col_types = FALSE)
+cluster.df <- subset(cluster.df, select=c("gene_id", "contrast"))
 
-#length.df <- read_tsv("C:\\Users\\19dee\\OneDrive\\Documents\\GitHub\\Triploid-Pacu-Gene-Dosage\\Genome_Info\\3Pocillopora_Actua_HIv1_braker_v1.b2g.txt")
 GO.df <- read_tsv("Genome_Info/Pocillopora_acuta_KBHIv2.genes.EggNog_results.txt", show_col_types = FALSE)
-GO.df <- tibble("gene_id"=GO.df$`#query`, "GO_terms"=GO.df$GOs); head(GO.df); str(GO.df)
-# length.df <- length.df[,c(1,3,8)]
-# colnames(length.df) <- c("gene_id", "length", "GO_terms")
-# head(length.df)
-length.df <- read_tsv("Genome_Info/Pocillopora_acuta_KBHIv2.gentrome.fa.gz.salmon.elen.matrix.txt", show_col_types = FALSE)
-length.df <- tibble("gene_id"=length.df$Name, "mean_length"=round(length.df$Mean_length)); head(length.df)
+GO.df <- tibble("gene_id"=GO.df$`#query`, "GO_terms"=GO.df$GOs); head(GO.df)
+
+length.df <- read_tsv("Genome_Info/Pocillopora_acuta_KBHIv2.gentrome.fa.gz.salmon.elen.matrix.txt", show_col_types = TRUE)
+length.df <- tibble("gene_id"=length.df$Name, "mean_length"=round(rowMeans(length.df[,-1]))); head(length.df)
 ```
+
 Separate out different gene groups
 ```{r}
-DEGs1 <- filter(cluster.df, Cluster == "Triploid_v_Diploid_Up"); nrow(DEGs1) 
-DEGs2 <- filter(cluster.df, Cluster == "Triploid_v_Diploid_Down"); nrow(DEGs2) 
-DEGs3 <- filter(cluster.df, Cluster == "T1vD_Up"); nrow(DEGs3) 
-DEGs4 <- filter(cluster.df, Cluster == "T1vD_Down"); nrow(DEGs4) 
-DEGs5 <- filter(cluster.df, Cluster == "T2vD_Up"); nrow(DEGs5) 
-DEGs6 <- filter(cluster.df, Cluster == "T2vD_Down"); nrow(DEGs6) 
-DEGs7 <- filter(cluster.df, Cluster == "T1vT2_Up"); nrow(DEGs7) 
-DEGs8 <- filter(cluster.df, Cluster == "T1vT2_Down"); nrow(DEGs8) 
-```
-Assess overlap between groups, specifically Triploid_v_Diploid and the Triploid groups versus the Diploid group
-```{r}
-i_TDup_T1Dup <- intersect(DEGs1$gene_id, DEGs3$gene_id); length(i_TDup_T1Dup)
-i_TDup_T2Dup <- intersect(DEGs1$gene_id, DEGs5$gene_id); length(i_TDup_T2Dup)
-length(intersect(i_TDup_T1Dup, i_TDup_T2Dup))
-core_up_triploid_genes <- intersect(i_TDup_T1Dup, i_TDup_T2Dup)
-i_TDdown_T1Ddown <- intersect(DEGs2$gene_id, DEGs4$gene_id); length(i_TDdown_T1Ddown)
-i_TDdown_T2Ddown <- intersect(DEGs2$gene_id, DEGs6$gene_id); length(i_TDdown_T2Ddown)
-length(intersect(i_TDdown_T1Ddown, i_TDdown_T2Ddown))
-core_down_triploid_genes <- intersect(i_TDdown_T1Ddown, i_TDdown_T2Ddown)
+#Triploids v Diploids (only shared genes)
+#Up
+G2vG6 <- cluster.df %>% filter(contrast == "Up.Group2_v_Group6")
+G3vG6 <- cluster.df %>% filter(contrast == "Up.Group3_v_Group6")
+TvD.shared.up <- intersect(G2vG6$gene_id, G3vG6$gene_id)
+Up.TvD <- filter(cluster.df, gene_id %in% TvD.shared.up)
 
-d1 <- intersect(DEGs1$gene_id, DEGs7$gene_id) 
-d2 <- intersect(DEGs1$gene_id, DEGs8$gene_id) 
-d3 <- intersect(DEGs2$gene_id, DEGs7$gene_id) 
-d4 <- intersect(DEGs2$gene_id, DEGs8$gene_id) 
-length(diffPloidyTree <- unique(as.list(d1, d2, d3, d4)))
-```
+#Down
+G2vG6 <- cluster.df %>% filter(contrast == "Down.Group2_v_Group6")
+G3vG6 <- cluster.df %>% filter(contrast == "Down.Group3_v_Group6")
+TvD.shared.down <- intersect(G2vG6$gene_id, G3vG6$gene_id)
+Down.TvD <- filter(cluster.df, gene_id %in% TvD.shared.down)
 
+intersect(Up.TvD$gene_id, Down.TvD$gene_id) #Should be no overlap
+
+#Between triploid groups
+#Up
+Up.G3vG2 <- filter(cluster.df, contrast == "Up.Group3_v_Group2")
+
+#Down
+Down.G3vG2 <- filter(cluster.df, contrast == "Down.Group3_v_Group2")
+```
 
 Form a reference dataframe containing all relevant gene information, including gene_id, associated GO_terms, and gene length.
 ```{r}
-# GO.ref <- right_join(GO.df, length.df, by="gene_id")
-# GO.ref$GO_terms <- gsub("-","",GO.ref$GO_terms)
+# GO.ref <- right_join(cluster.df, GO.df, by="gene_id")
+GO.ref <- right_join(GO.df, length.df, by="gene_id")
+GO.ref$GO_terms <- gsub("-","Unknown",GO.ref$GO_terms)
+# GO.ref$GO_terms[GO.ref$GO_terms == "-"] <- NA
 # GO.ref <- na.omit(GO.ref)
-# str(GO.ref) 
+str(GO.ref) 
 ```
+
 Set ID and gene length vectors, and make a binary matrix indicating which genes are differentially expressed. These are used as input to nullp, which for calculates a Probability Weighting Function for each set of DEGs.
-
 ```{r}
-IDvector <- unique(length.df$gene_id)
-lengthVector <- length.df$mean_length
+# GO.ref <- str(unique(GO.ref))
+IDvector <- GO.ref$gene_id
+lengthVector <- GO.ref$mean_length
 
-#Core overexpressed triploid genes
+#Cluster1 -- Up in triploids
 
-C1genes <- core_up_triploid_genes
+C1genes <- as.vector(unique(Up.TvD$gene_id))
 length(C1genes)
-C1genes.matrix=as.integer(IDvector%in%C1genes)
-names(C1genes.matrix)=IDvector
+C1genes.matrix=as.integer(GO.ref$gene_id%in%C1genes)
+names(C1genes.matrix)=GO.ref$gene_id
 length(C1genes.matrix)
 
-#Core underexpressed triploid genes
+#Cluster2 -- Down in triploids
 
-C2genes <- core_down_triploid_genes
+C2genes <- as.vector(unique(Down.TvD$gene_id))
 length(C2genes)
-C2genes.matrix=as.integer(IDvector%in%C2genes)
-names(C2genes.matrix)=IDvector
+C2genes.matrix=as.integer(GO.ref$gene_id%in%C2genes)
+names(C2genes.matrix)=GO.ref$gene_id
 length(C2genes.matrix)
 
-#Triploid branch-specific differences (Up in T1 v T2)
-C3genes <- as.vector(DEGs7$gene_id)
+#Cluster3 -- Up in Group3 (v Group2)
+
+C3genes <- as.vector(unique(Up.G3vG2$gene_id))
 length(C3genes)
-C3genes.matrix=as.integer(IDvector%in%C3genes)
-names(C3genes.matrix)=IDvector
+C3genes.matrix=as.integer(GO.ref$gene_id%in%C3genes)
+names(C3genes.matrix)=GO.ref$gene_id
 length(C3genes.matrix)
 
-#Triploid branch-specific differences (Up in T2 v T1)
+#Cluster4 -- Down in Group3 (v Group2)
 
-C4genes <- as.vector(DEGs8$gene_id)
+C4genes <- as.vector(unique(Down.G3vG2$gene_id))
 length(C4genes)
-C4genes.matrix=as.integer(IDvector%in%C4genes)
-names(C4genes.matrix)=IDvector
+C4genes.matrix=as.integer(GO.ref$gene_id%in%C4genes)
+names(C4genes.matrix)=GO.ref$gene_id
 length(C4genes.matrix)
-
-#Triploid branch-specific differences (Up in T2 v T1) that are also ploidy DEGs
-C5genes <- as.vector(diffPloidyTree)
-length(C5genes)
-C5genes.matrix=as.integer(IDvector%in%C5genes)
-names(C5genes.matrix)=IDvector
-length(C5genes.matrix)
 ```
 
 Run a probability weighting function using the vectors and matrices we made above for each group.
@@ -141,33 +123,26 @@ pwf.1<-nullp(DEgenes=C1genes.matrix, id=IDvector, bias.data=lengthVector)
 pwf.2<-nullp(DEgenes=C2genes.matrix, id=IDvector, bias.data=lengthVector)
 pwf.3<-nullp(DEgenes=C3genes.matrix, id=IDvector, bias.data=lengthVector)
 pwf.4<-nullp(DEgenes=C4genes.matrix, id=IDvector, bias.data=lengthVector)
-pwf.5<-nullp(DEgenes=C5genes.matrix, id=IDvector, bias.data=lengthVector)
 ```
 
 Stopping to check that the matrix worked as it should have. Checking the number of DEGs
 ```{r}
-length(C1genes)
-nrow(filter(pwf.1, DEgenes==1))
-length(C2genes)
-nrow(filter(pwf.2, DEgenes==1))
-length(C3genes)
-nrow(filter(pwf.3, DEgenes==1))
-length(C4genes)
-nrow(filter(pwf.4, DEgenes==1))
-length(C5genes)
-nrow(filter(pwf.5, DEgenes==1))
+nrow(filter(pwf.1, DEgenes==1)) == length(C1genes)
+nrow(filter(pwf.2, DEgenes==1)) == length(C2genes)
+nrow(filter(pwf.3, DEgenes==1)) == length(C3genes)
+nrow(filter(pwf.4, DEgenes==1)) == length(C4genes)
 ```
 
 Prepare GO term dataframe
 ```{r}
-GO.annot <- subset(GO.df, select=c(gene_id, GO_terms))
+GO.annot <- subset(GO.ref, select=c(gene_id, GO_terms))
 
 splitted <- strsplit(as.character(GO.annot$GO_terms), ",") #split into multiple GO ids
 GO.terms <- data.frame(v1 = rep.int(GO.annot$gene_id, sapply(splitted, length)), v2 = unlist(splitted)) #list all genes with each of their GO terms in a single row
 colnames(GO.terms) <- c("gene_id", "GO.ID")
 
 GO.terms$GO.ID<- as.character(GO.terms$GO.ID)
-GO.terms$GO.ID <- replace_na(GO.terms$GO.ID, "unknown")
+# GO.terms$GO.ID <- replace_na(GO.terms$GO.ID, "unknown")
 GO.terms$GO.ID <- as.factor(GO.terms$GO.ID)
 GO.terms$gene_id <- as.factor(GO.terms$gene_id)
 GO.terms$GO.ID <- gsub(" ", "", GO.terms$GO.ID)
@@ -183,9 +158,7 @@ GOwall.1 <- goseq(pwf.1, IDvector, gene2cat=GO.terms, test.cats=c("GO:CC", "GO:B
 GOwall.2 <- goseq(pwf.2, IDvector, gene2cat=GO.terms, test.cats=c("GO:CC", "GO:BP", "GO:MF"), method="Wallenius", use_genes_without_cat=TRUE)
 GOwall.3 <- goseq(pwf.3, IDvector, gene2cat=GO.terms, test.cats=c("GO:CC", "GO:BP", "GO:MF"), method="Wallenius", use_genes_without_cat=TRUE)
 GOwall.4 <- goseq(pwf.4, IDvector, gene2cat=GO.terms, test.cats=c("GO:CC", "GO:BP", "GO:MF"), method="Wallenius", use_genes_without_cat=TRUE)
-GOwall.5 <- goseq(pwf.5, IDvector, gene2cat=GO.terms, test.cats=c("GO:CC", "GO:BP", "GO:MF"), method="Wallenius", use_genes_without_cat=TRUE)
 ```
-
 Find only enriched GO terms that are statistically significant at cutoff
 ```{r}
 up.GO1<-GOwall.1$category[GOwall.1$over_represented_pvalue<.05]
@@ -227,47 +200,17 @@ up.GO4$term <- as.factor(up.GO4$term)
 nrow(filter(up.GO4, ontology=="BP")) #number sig BP terms
 nrow(filter(up.GO4, ontology=="MF")) #number sig MF terms
 nrow(up.GO4)
-
-up.GO5<-GOwall.5$category[GOwall.5$over_represented_pvalue<.05]
-up.GO5<-data.frame(up.GO5)
-colnames(up.GO5) <- c("category")
-up.GO5 <- merge(up.GO5, GOwall.5, by="category")
-up.GO5 <- up.GO5[order(up.GO5$ontology, up.GO5$over_represented_pvalue, -up.GO5$numDEInCat),]
-up.GO5$term <- as.factor(up.GO5$term)
-nrow(filter(up.GO5, ontology=="BP")) #number sig BP terms
-nrow(filter(up.GO5, ontology=="MF")) #number sig MF terms
-nrow(up.GO5)
-```
-Save significant terms
-```{r}
-# write.csv(up.GO1, file = "C:\\Users\\19dee\\OneDrive\\Documents\\GitHub\\Triploid-Pacu-Gene-Dosage\\Output\\up.GO1.csv", row.names = FALSE)
-# write.csv(up.GO2, file = "C:\\Users\\19dee\\OneDrive\\Documents\\GitHub\\Triploid-Pacu-Gene-Dosage\\Output\\up.GO2.csv", row.names = FALSE)
-# write.csv(up.GO3, file = "C:\\Users\\19dee\\OneDrive\\Documents\\GitHub\\Triploid-Pacu-Gene-Dosage\\Output\\up.GO3.csv", row.names = FALSE)
-# write.csv(up.GO4, file = "C:\\Users\\19dee\\OneDrive\\Documents\\GitHub\\Triploid-Pacu-Gene-Dosage\\Output\\up.GO4.csv", row.names = FALSE)
-# write.csv(up.GO5, file = "C:\\Users\\19dee\\OneDrive\\Documents\\GitHub\\Triploid-Pacu-Gene-Dosage\\Output\\up.GO5.csv", row.names = FALSE)
-# 
-# write.csv(up.GO1, file = "Output/NEW_up.GO1.csv", row.names = FALSE)
-# write.csv(up.GO2, file = "Output/NEW_up.GO2.csv", row.names = FALSE)
-# write.csv(up.GO3, file = "Output/NEW_up.GO3.csv", row.names = FALSE)
-# write.csv(up.GO4, file = "Output/NEW_up.GO4.csv", row.names = FALSE)
-# write.csv(up.GO5, file = "Output/NEW_up.GO5.csv", row.names = FALSE)
 ```
 
 ## Find associated GOslim terms to streamline interpretation of our very cool results
 
-Load in Rdata, if necessary.
-```{r}
-#Rdata.2 <- load(file = "Scripts/20210916_R_session.RData")
-```
-
 Join our dataframes containing significantly up and down-regulated terms.
 ```{r}
-up.GO1$Cluster <- "Cluster1"
-up.GO2$Cluster <- "Cluster2"
-up.GO3$Cluster <- "Cluster3"
-up.GO4$Cluster <- "Cluster4"
-up.GO5$Cluster <- "Cluster5"
-all_GO <- bind_rows(up.GO1, up.GO2, up.GO3, up.GO4, up.GO5) #, up.GO5)  #bind rows
+up.GO1$Cluster <- "Up in Triploids"
+up.GO2$Cluster <- "Down in Triploids"
+up.GO3$Cluster <- "Up in Group3 v Group2"
+up.GO4$Cluster <- "Down in Group3 v Group2"
+all_GO <- bind_rows(up.GO1, up.GO2, up.GO3, up.GO4)  #bind rows
 str(all_GO)
 ```
 Run GOslim to get our umbrella terms.
@@ -330,48 +273,30 @@ Save slim info with GO enrichment info for heatmap dataframes.
 ```{r}
 GO.BP <- right_join(BPslim, filter(all_GO, ontology=="BP"), by="category") #add back GO enrichment info for each offspring term
 GO.MF <- right_join(MFslim, filter(all_GO, ontology=="MF"), by="category") #add back GO enrichment info for each offspring term
-GO_slim_results <- rbind(GO.BP, GO.MF)
-write_csv(GO_slim_results, "Output/GOseq_slim_ploidy_Treesplit_DEGs.csv")
 ```
 
 ### Make a heatmap to visualize our functional enrichment results
 ```{r}
-BPplot <- na.omit(GO.BP) %>% filter(over_represented_pvalue<0.01) %>% #filter(numDEInCat>2) %>% 
+GO.BP$Cluster <- factor(GO.BP$Cluster, levels=c("Up in Triploids", "Down in Triploids", "Up in Group3 v Group2", "Down in Group3 v Group2"))
+BPplot <- na.omit(GO.BP) %>% slice_max(n=5, by = slim_cat, order_by = over_represented_pvalue) %>% 
   mutate(term = fct_reorder(term, -over_represented_pvalue)) %>% ggplot(aes(x = Cluster, y = term)) + 
   geom_tile(aes(fill=over_represented_pvalue, width = 1)) + 
   facet_grid(slim_term ~ ontology, scales = "free_y", labeller = label_wrap_gen(width = 10, multi_line = TRUE))+
   theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
   panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),
-  strip.text.y = element_text(angle=0, size = 11, face = "bold"),
-  strip.text.x = element_text(size = 12, face = "bold"),
+  strip.text.y = element_text(angle=0, size = 6, face = "bold"),
+  strip.text.x = element_text(size = 6, face = "bold"),
   axis.title.x = element_blank(),
-  axis.title.y = element_text(size=15),
-  axis.text = element_text(size = 12), legend.position = "None",
+  axis.title.y = element_text(size=7),
+  axis.text = element_text(size = 6), legend.position = "None",
   axis.text.x = element_text(angle = 90),
   plot.margin = unit(c(0,1,0,0.25), "cm"));BPplot
-# ggsave("C:\\Users\\19dee\\OneDrive\\Documents\\GitHub\\Triploid-Pacu-Gene-Dosage\\Output\\GOslimBPplot.pdf", BPplot, width = 15, height = 20, units = c("in"))
-ggsave("Output/NEW_GOslimBPplot.pdf", BPplot, width = 15, height = 20, units = c("in"))
+ggsave("Output/3-Pacu-group-GOslimBPplot.pdf", BPplot, width = 10, height = 20, units = c("in"))
+```
 
-MFplot <- GO.MF %>% #filter(numDEInCat>2) %>% 
-  filter(over_represented_pvalue<0.01)  %>% 
-  mutate(term = fct_reorder(term, -over_represented_pvalue)) %>% ggplot(aes(x = Cluster, y = term)) + 
-  geom_tile(aes(fill=over_represented_pvalue, width = 1)) + 
-  scale_y_discrete(position = "right") +
-  facet_grid(slim_term ~ ontology, scales = "free_y", labeller = label_wrap_gen(width = 10, multi_line = TRUE), 
-             switch="y") + #Put the y facet strips on the left
-  theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-  panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),
-  strip.text.y.left = element_text(angle=0, size = 11, face = "bold"),
-  strip.text.x = element_text(size = 12, face = "bold"),
-  axis.title = element_blank(),
-  axis.text.x = element_text(angle = 90),
-  axis.text = element_text(size = 12), legend.title = element_text(size = 12), legend.text = element_text(size = 11))
-#ggsave("C:\\Users\\19dee\\OneDrive\\Documents\\GitHub\\Triploid-Pacu-Gene-Dosage\\Output\\GOslimMFplot.pdf", MFplot, width = 15, height = 20, units = c("in"))
-ggsave("Output/NEW_GOslimMFplot.pdf", MFplot, width = 15, height = 20, units = c("in"))
-
-GOfig <- BPplot + MFplot
-GOfig <- ggdraw(plot = GOfig) + draw_plot_label(c("a)", "b)"), c(0, 0.35), c(1, 1), size = 15)
-#ggsave("C:\\Users\\19dee\\OneDrive\\Documents\\GitHub\\Triploid-Pacu-Gene-Dosage\\Output\\GOslim.pdf", GOfig, width = 20, height = 24, units = c("in"))
-ggsave("Output/NEW_GOslim.pdf", GOfig, width = 20, height = 24, units = c("in"))
+Write GO results
+```{r}
+GO_enrichment_res <- rbind(GO.BP, GO.MF)
+write_csv(GO_enrichment_res, "Output/3-Pacu-group-DEG-GOenrichment-results.csv")
 ```
 

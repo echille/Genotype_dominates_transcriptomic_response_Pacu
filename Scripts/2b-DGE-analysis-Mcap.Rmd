@@ -125,15 +125,15 @@ dend = cluster_within_group(mat, hmTreatment$Temperature)
 
 DEGheatmap <-  Heatmap(mat, cluster_columns = dend, column_split = 2,
         name = "Gene expression (vst)", 
-        show_row_names = T, 
+        show_row_names = F, 
         top_annotation = hm_ann_col, 
-        show_column_names = T, row_dend_side = "left" ,
+        show_column_names = F, row_dend_side = "left" ,
         column_dend_height = unit(0.5, "in"),
         row_title_side = "right", row_title_rot = 0, row_dend_reorder = TRUE, 
         row_gap = unit(2.5, "mm"), border = TRUE,
         column_names_gp =  gpar(fontsize = 10))
 
-pdf("Output/1b-Mcap-edgeR-Treatment-DEG-heatmap.pdf", width = 10.5, height = 7)
+pdf("Output/1b-Mcap-1week-treatment-DEG-heatmap.pdf", width = 10.5, height = 7)
 draw(DEGheatmap)
 dev.off()
 ```
@@ -157,5 +157,5 @@ DEG_PCA <- ggplot(data = d6, aes_string(x = "PC1", y = "PC2")) +
         plot.background=element_blank(), #Set the plot background
         axis.title = element_text(size = 14), #Axis title size
         axis.text = element_blank());DEG_PCA #Axis text size and view plot
-ggsave("Output/1b-Mcap-edgeR-allsamples-DEGs-PCA.pdf", DEG_PCA)
+ggsave("Output/1b-Mcap-1week-treatment-DEGs-PCA.pdf", DEG_PCA)
 ```

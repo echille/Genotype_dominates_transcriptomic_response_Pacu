@@ -119,9 +119,9 @@ Write and save differential expression information
 DEGs <- rbind(trip.DEGs, G2vG6.DEGs, G3vG6.DEGs)
 
 
-up.DEGs <- filter(DEGs, log2FoldChange>0)
+up.DEGs <- filter(DEGs, log2FoldChange>2)
 up.DEGs$contrast <- paste0("Up.",up.DEGs$contrast,sep="")
-down.DEGs <- filter(DEGs, log2FoldChange<0)
+down.DEGs <- filter(DEGs, log2FoldChange<(-2))
 down.DEGs$contrast <- paste0("Down.",down.DEGs$contrast,sep="")
 
 dir.DEGs <- rbind(up.DEGs, down.DEGs)
