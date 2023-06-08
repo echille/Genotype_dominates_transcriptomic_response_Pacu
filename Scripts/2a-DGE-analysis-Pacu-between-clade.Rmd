@@ -1,5 +1,5 @@
 ---
-title: "2b) Mcap Differential Gene Expression analysis"
+title: "2b) *P. acuta* Differential Gene Expression analysis between genotype and ploidy"
 output:
   pdf_document: default
   html_notebook: default
