@@ -1,6 +1,6 @@
 ## Gene expression response to physiological stress in two Hawaiian corals is dominated by ploidy and genotype
 
-[![DOI]([![DOI](https://zenodo.org/badge/601259321.svg)](https://zenodo.org/doi/10.5281/zenodo.10652224)
+[![DOI](https://zenodo.org/badge/601259321.svg)](https://zenodo.org/doi/10.5281/zenodo.10652224)
 
 Erin E. Chille (1), Timothy G. Stephens (1), Deeksha Misri (2), Emma L. Strand (3), Hollie M. Putnam (3), and Debashish Bhattacharya (1) 
 1. Department of Biochemistry and Microbiology, Rutgers University; New Brunswick, NJ 08901, USA.  
