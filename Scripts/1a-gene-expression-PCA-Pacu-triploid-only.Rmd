@@ -137,21 +137,49 @@ kruskal.test(PC5 ~ group.1, data = pc_cor)
 kruskal.test(PC5 ~ timename, data = pc_cor)
 kruskal.test(PC5 ~ timename_genotype, data = pc_cor)
 
+kruskal.test(PC6 ~ group.1, data = pc_cor)
+kruskal.test(PC6 ~ timename, data = pc_cor)
+kruskal.test(PC6 ~ timename_genotype, data = pc_cor)
+
 library(FSA)
-timename_group.test <- data.frame(sample=d$sample,genotype=d$group.1, temp=d$temp, timename=as.factor(d$timename), PC2=pc_cor$PC2, PC3=pc_cor$PC3, PC5=pc_cor$PC5)
+timename_group.test <- data.frame(sample=d$sample,genotype=d$group.1, temp=d$temp, timename=as.factor(d$timename), PC2=pc_cor$PC2, PC3=pc_cor$PC3, PC5=pc_cor$PC5, PC6=pc_cor$PC6)
 timename_group.test$timename <- factor(timename_group.test$timename, levels = c("0_hour", "6_hour", "12_hour", "30_hour", "1_week", "2_week", "4_week", "6_week", "8_week", "12_week"))
 
+##Ambient
+
 timename_group_Amb.test <- filter(timename_group.test, temp=="Amb")
-timename_group_Amb.dunn <- dunnTest(PC5 ~ timename,
+
+kruskal.test(PC5 ~ timename, data = timename_group_Amb.test)
+kruskal.test(PC6 ~ timename, data = timename_group_Amb.test)
+timename_group_Amb_PC5.dunn <- dunnTest(PC5 ~ timename,
+              data=timename_group_Amb.test,
+              method="bh")    # Can adjust p-values;
+                              # See ?p.adjust for options
+timename_group_Amb_PC6.dunn <- dunnTest(PC6 ~ timename,
               data=timename_group_Amb.test,
               method="bh")    # Can adjust p-values;
                               # See ?p.adjust for options
 
-timename_group_hot.test <- filter(timename_group.test, temp=="Hot")
-timename_group_hot.dunn <- dunnTest(PC5 ~ timename,
-              data=timename_group_hot.test,
+write_csv(as.data.frame(timename_group_Amb_PC5.dunn$res), "Output/1a-Pacu-mortality-dunn-AMB_PC5.csv")
+write_csv(as.data.frame(timename_group_Amb_PC6.dunn$res), "Output/1a-Pacu-mortality-dunn-AMB_PC6.csv")
+
+##Hot
+
+timename_group_Hot.test <- filter(timename_group.test, temp=="Hot")
+
+kruskal.test(PC5 ~ timename, data = timename_group_Hot.test)
+kruskal.test(PC6 ~ timename, data = timename_group_Hot.test)
+
+timename_group_Hot_PC5.dunn <- dunnTest(PC5 ~ timename,
+              data=timename_group_Hot.test,
+              method="bh")    # Can adjust p-values;
+timename_group_Hot_PC6.dunn <- dunnTest(PC6 ~ timename,
+              data=timename_group_Hot.test,
               method="bh")    # Can adjust p-values;
                               # See ?p.adjust for options
+
+write_csv(as.data.frame(timename_group_Hot_PC5.dunn$res), "Output/1a-Pacu-mortality-dunn-Hot_PC5.csv")
+write_csv(as.data.frame(timename_group_Hot_PC6.dunn$res), "Output/1a-Pacu-mortality-dunn-Hot_PC6.csv")
 ```
 Visualize first two principle coordinates.
 For Emma's manuscript: 
@@ -177,7 +205,7 @@ allgenes_PCA <- ggplot(data = d, aes_string(x = "PC1", y = "PC7")) +
         plot.background=element_blank(), #Set the plot background
         axis.title = element_text(size = 14)) + #Axis title sizet
   guides(fill = guide_legend(override.aes = list(shape=21))); allgenes_PCA
-#ggsave("Output/1a-Pacu-edgeR-allsamples-DEGs-PCA.pdf", allgenes_PCA)
+ggsave("Output/1a-Pacu-edgeR-triploid-only-DEGs-PCA.pdf", allgenes_PCA)
 ```
 
 Plot as a dendrogram
