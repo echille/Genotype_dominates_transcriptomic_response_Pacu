@@ -40,7 +40,7 @@ head(treatmentinfo)
 
 Merge the treatment and time_point columns into a new column , group. Set group as a factor.
 ```{r}
-treatmentinfo <- filter(treatmentinfo, Treatment%in%c("ATAC", "HTAC") & Timepoint=="1_week")
+treatmentinfo <- filter(treatmentinfo, Treatment%in%c("ATAC", "HTAC") & Timepoint=="4_week")
 treatmentinfo$Treatment <- factor(treatmentinfo$Treatment, levels = c("ATAC","HTAC"))
 ```
 
@@ -106,14 +106,15 @@ DEGlist <- gdds[DEGs$gene_id,]
 
 We know from before that our size factors are all less than 4, so we can use VST!
 ```{r}
-DEGvst <- vst(DEGlist, blind=FALSE, nsub = nrow(counts(DEGlist)), fitType = "local") #apply a variance stabilizing transforamtion to minimize efplncts of small counts and normalize wrt library size
-head(assay(DEGvst)) #view transformed gene count data
-dim(assay(DEGvst))
+Gvst <- vst(as.matrix(gcount_filt), blind=TRUE, fitType = "local") #apply a variance stabilizing transforamtion to minimize efplncts of small counts and normalize wrt library size
+DEGvst <- Gvst[DEGs$gene_id,]
+head(DEGvst) #view transformed gene count data
+dim(DEGvst)
 ```
 
 Make a matrix for computing similarity
 ```{r}
-mat <- assay(DEGvst)#[topVarGenes, ] #make an expression object
+mat <- DEGvst#[topVarGenes, ] #make an expression object
 mat <- mat - rowMeans(mat) #difference in expression compared to average across all samples
 ```
 
@@ -133,7 +134,7 @@ DEGheatmap <-  Heatmap(mat, cluster_columns = dend, column_split = 2,
         row_gap = unit(2.5, "mm"), border = TRUE,
         column_names_gp =  gpar(fontsize = 10))
 
-pdf("Output/1b-Mcap-1week-treatment-DEG-heatmap.pdf", width = 10.5, height = 7)
+pdf("Output/2b-Mcap-4week-temperature-DEG-heatmap.pdf", width = 10.5, height = 7)
 draw(DEGheatmap)
 dev.off()
 ```
@@ -157,5 +158,5 @@ DEG_PCA <- ggplot(data = d6, aes_string(x = "PC1", y = "PC2")) +
         plot.background=element_blank(), #Set the plot background
         axis.title = element_text(size = 14), #Axis title size
         axis.text = element_blank());DEG_PCA #Axis text size and view plot
-ggsave("Output/1b-Mcap-1week-treatment-DEGs-PCA.pdf", DEG_PCA)
+ggsave("Output/2b-Mcap-4week-temperature-DEGs-PCA.pdf", DEG_PCA)
 ```

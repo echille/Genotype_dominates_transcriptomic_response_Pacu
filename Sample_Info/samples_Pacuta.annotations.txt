@@ -1,120 +1,120 @@
-sample	species	treatment	temp	pco2	timepoint	plugid	reef	reef_color	ploidy	ploidy_color	group	group_color	treesplit
-Pacuta_ATAC_TP11_1777	Pacuta	ATAC	Amb	Amb	TP11	1777	HIMB	#b35806	Triploid	#d95f02	Group1	#1f78b4	T1
-Pacuta_ATAC_TP8_1051	Pacuta	ATAC	Amb	Amb	TP8	1051	Reef.11.13	#fee0b6	Triploid	#d95f02	Group1	#1f78b4	T1
-Pacuta_ATAC_TP11_1103	Pacuta	ATAC	Amb	Amb	TP11	1103	Reef.42.43	#542788	Triploid	#d95f02	Group2	#33a02c	T1
-Pacuta_ATAC_TP11_2306	Pacuta	ATAC	Amb	Amb	TP11	2306	Reef.18	#d8daeb	Triploid	#d95f02	Group2	#33a02c	T1
-Pacuta_ATAC_TP3_1041	Pacuta	ATAC	Amb	Amb	TP3	1041	Reef.11.13	#fee0b6	Triploid	#d95f02	Group2	#33a02c	T1
-Pacuta_ATAC_TP3_1637	Pacuta	ATAC	Amb	Amb	TP3	1637	Reef.11.13	#fee0b6	Triploid	#d95f02	Group2	#33a02c	T1
-Pacuta_ATAC_TP4_1762	Pacuta	ATAC	Amb	Amb	TP4	1762	Reef.42.43	#542788	Triploid	#d95f02	Group2	#33a02c	T1
-Pacuta_ATAC_TP7_2413	Pacuta	ATAC	Amb	Amb	TP7	2413	Reef.18	#d8daeb	Triploid	#d95f02	Group2	#33a02c	T1
-Pacuta_ATAC_TP8_2012	Pacuta	ATAC	Amb	Amb	TP8	2012	Reef.42.43	#542788	Triploid	#d95f02	Group2	#33a02c	T1
-Pacuta_ATAC_TP9_2357	Pacuta	ATAC	Amb	Amb	TP9	2357	Reef.18	#d8daeb	Triploid	#d95f02	Group2	#33a02c	T1
-Pacuta_ATAC_TP10_1559	Pacuta	ATAC	Amb	Amb	TP10	1559	Lilipuna.Fringe	#f1a340	Triploid	#d95f02	Group3	#c51b7d	T2
-Pacuta_ATAC_TP10_1641	Pacuta	ATAC	Amb	Amb	TP10	1641	HIMB	#b35806	Triploid	#d95f02	Group3	#c51b7d	T2
-Pacuta_ATAC_TP1_2363	Pacuta	ATAC	Amb	Amb	TP1	2363	Reef.18	#d8daeb	Triploid	#d95f02	Group3	#c51b7d	T2
-Pacuta_ATAC_TP3_1471	Pacuta	ATAC	Amb	Amb	TP3	1471	Reef.35.36	#998ec3	Triploid	#d95f02	Group3	#c51b7d	T2
-Pacuta_ATAC_TP4_1060	Pacuta	ATAC	Amb	Amb	TP4	1060	Reef.18	#d8daeb	Triploid	#d95f02	Group3	#c51b7d	T2
-Pacuta_ATAC_TP4_2002	Pacuta	ATAC	Amb	Amb	TP4	2002	Reef.42.43	#542788	Triploid	#d95f02	Group3	#c51b7d	T2
-Pacuta_ATAC_TP5_1563	Pacuta	ATAC	Amb	Amb	TP5	1563	Lilipuna.Fringe	#f1a340	Triploid	#d95f02	Group3	#c51b7d	T2
-Pacuta_ATAC_TP5_1757	Pacuta	ATAC	Amb	Amb	TP5	1757	Reef.42.43	#542788	Triploid	#d95f02	Group3	#c51b7d	T2
-Pacuta_ATAC_TP9_1594	Pacuta	ATAC	Amb	Amb	TP9	1594	Reef.35.36	#998ec3	Triploid	#d95f02	Group3	#c51b7d	T2
-Pacuta_ATAC_TP1_1043	Pacuta	ATAC	Amb	Amb	TP1	1043	Lilipuna.Fringe	#f1a340	Triploid	#d95f02	Group4	#6a3d9a	T2
-Pacuta_ATAC_TP6_1542	Pacuta	ATAC	Amb	Amb	TP6	1542	Lilipuna.Fringe	#f1a340	Triploid	#d95f02	Group4	#6a3d9a	T2
-Pacuta_ATAC_TP10_1159	Pacuta	ATAC	Amb	Amb	TP10	1159	Reef.42.43	#542788	Diploid	#1b9e77	Group5	#ff7f00	
-Pacuta_ATAC_TP1_1775	Pacuta	ATAC	Amb	Amb	TP1	1775	Reef.42.43	#542788	Diploid	#1b9e77	Group5	#ff7f00	
-Pacuta_ATAC_TP6_1468	Pacuta	ATAC	Amb	Amb	TP6	1468	Reef.35.36	#998ec3	Diploid	#1b9e77	Group5	#ff7f00	
-Pacuta_ATAC_TP8_1755	Pacuta	ATAC	Amb	Amb	TP8	1755	Reef.42.43	#542788	Diploid	#1b9e77	Group5	#ff7f00	
-Pacuta_ATAC_TP9_1141	Pacuta	ATAC	Amb	Amb	TP9	1141	Reef.42.43	#542788	Diploid	#1b9e77	Group5	#ff7f00	
-Pacuta_ATAC_TP6_1050	Pacuta	ATAC	Amb	Amb	TP6	1050	Reef.18	#d8daeb	Diploid	#1b9e77	Group6	#e31a1c	D
-Pacuta_ATAC_TP7_1047	Pacuta	ATAC	Amb	Amb	TP7	1047	Lilipuna.Fringe	#f1a340	Diploid	#1b9e77	Group6	#e31a1c	D
-Pacuta_ATAC_TP5_1059	Pacuta	ATAC	Amb	Amb	TP5	1059	Reef.11.13	#fee0b6	Diploid	#1b9e77	Group7	#b15928	
-Pacuta_ATAC_TP7_1445	Pacuta	ATAC	Amb	Amb	TP7	1445	Reef.11.13	#fee0b6	Diploid	#1b9e77	Ungroup	#808080	
-Pacuta_ATHC_TP4_2733	Pacuta	ATHC	Amb	High	TP4	2733	Reef.42.43	#542788	Triploid	#d95f02	Group1	#1f78b4	T1
-Pacuta_ATHC_TP8_1459	Pacuta	ATHC	Amb	High	TP8	1459	Reef.18	#d8daeb	Triploid	#d95f02	Group1	#1f78b4	T1
-Pacuta_ATHC_TP11_1147	Pacuta	ATHC	Amb	High	TP11	1147	HIMB	#b35806	Triploid	#d95f02	Group2	#33a02c	T1
-Pacuta_ATHC_TP3_2534	Pacuta	ATHC	Amb	High	TP3	2534	Reef.18	#d8daeb	Triploid	#d95f02	Group2	#33a02c	T1
-Pacuta_ATHC_TP4_1220	Pacuta	ATHC	Amb	High	TP4	1220	Lilipuna.Fringe	#f1a340	Triploid	#d95f02	Group2	#33a02c	T1
-Pacuta_ATHC_TP5_2877	Pacuta	ATHC	Amb	High	TP5	2877	HIMB	#b35806	Triploid	#d95f02	Group2	#33a02c	T1
-Pacuta_ATHC_TP6_2870	Pacuta	ATHC	Amb	High	TP6	2870	HIMB	#b35806	Triploid	#d95f02	Group2	#33a02c	T1
-Pacuta_ATHC_TP7_2878	Pacuta	ATHC	Amb	High	TP7	2878	HIMB	#b35806	Triploid	#d95f02	Group2	#33a02c	T1
-Pacuta_ATHC_TP9_1451	Pacuta	ATHC	Amb	High	TP9	1451	Reef.18	#d8daeb	Triploid	#d95f02	Group2	#33a02c	T1
-Pacuta_ATHC_TP9_2873	Pacuta	ATHC	Amb	High	TP9	2873	HIMB	#b35806	Triploid	#d95f02	Group2	#33a02c	T1
-Pacuta_ATHC_TP7_2409	Pacuta	ATHC	Amb	High	TP7	2409	Lilipuna.Fringe	#f1a340	Triploid	#d95f02	Group3	#c51b7d	T2
-Pacuta_ATHC_TP8_2564	Pacuta	ATHC	Amb	High	TP8	2564	Reef.18	#d8daeb	Triploid	#d95f02	Group3	#c51b7d	T2
-Pacuta_ATHC_TP1_2743	Pacuta	ATHC	Amb	High	TP1	2743	Lilipuna.Fringe	#f1a340	Triploid	#d95f02	Group4	#6a3d9a	T2
-Pacuta_ATHC_TP3_2750	Pacuta	ATHC	Amb	High	TP3	2750	Reef.42.43	#542788	Triploid	#d95f02	Group4	#6a3d9a	T2
-Pacuta_ATHC_TP5_2212	Pacuta	ATHC	Amb	High	TP5	2212	Reef.35.36	#998ec3	Diploid	#1b9e77	Group5	#ff7f00	
-Pacuta_ATHC_TP10_2197	Pacuta	ATHC	Amb	High	TP10	2197	Reef.35.36	#998ec3	Diploid	#1b9e77	Group6	#e31a1c	D
-Pacuta_ATHC_TP1_1207	Pacuta	ATHC	Amb	High	TP1	1207	Reef.11.13	#fee0b6	Diploid	#1b9e77	Group6	#e31a1c	D
-Pacuta_ATHC_TP11_2668	Pacuta	ATHC	Amb	High	TP11	2668	Lilipuna.Fringe	#f1a340	Diploid	#1b9e77	Group6	#e31a1c	D
-Pacuta_ATHC_TP11_2879	Pacuta	ATHC	Amb	High	TP11	2879	HIMB	#b35806	Diploid	#1b9e77	Group6	#e31a1c	D
-Pacuta_ATHC_TP1_2977	Pacuta	ATHC	Amb	High	TP1	2977	Reef.11.13	#fee0b6	Diploid	#1b9e77	Group6	#e31a1c	D
-Pacuta_ATHC_TP3_1219	Pacuta	ATHC	Amb	High	TP3	1219	Reef.35.36	#998ec3	Diploid	#1b9e77	Group6	#e31a1c	D
-Pacuta_ATHC_TP4_2993	Pacuta	ATHC	Amb	High	TP4	2993	Reef.11.13	#fee0b6	Diploid	#1b9e77	Group6	#e31a1c	D
-Pacuta_ATHC_TP5_1296	Pacuta	ATHC	Amb	High	TP5	1296	Reef.11.13	#fee0b6	Diploid	#1b9e77	Group6	#e31a1c	D
-Pacuta_ATHC_TP6_2999	Pacuta	ATHC	Amb	High	TP6	2999	Lilipuna.Fringe	#f1a340	Diploid	#1b9e77	Group6	#e31a1c	D
-Pacuta_ATHC_TP7_1281	Pacuta	ATHC	Amb	High	TP7	1281	Reef.35.36	#998ec3	Diploid	#1b9e77	Group6	#e31a1c	D
-Pacuta_ATHC_TP8_2861	Pacuta	ATHC	Amb	High	TP8	2861	HIMB	#b35806	Diploid	#1b9e77	Group6	#e31a1c	D
-Pacuta_ATHC_TP9_2979	Pacuta	ATHC	Amb	High	TP9	2979	Reef.35.36	#998ec3	Diploid	#1b9e77	Group6	#e31a1c	D
-Pacuta_ATHC_TP10_1205	Pacuta	ATHC	Amb	High	TP10	1205	Reef.35.36	#998ec3	Diploid	#1b9e77	Ungroup	#808080	
-Pacuta_ATHC_TP10_2550	Pacuta	ATHC	Amb	High	TP10	2550	Reef.18	#d8daeb	Diploid	#1b9e77	Ungroup	#808080	
-Pacuta_ATHC_TP6_1254	Pacuta	ATHC	Amb	High	TP6	1254	Reef.42.43	#542788	Triploid	#d95f02	Ungroup	#808080	
-Pacuta_HTAC_TP3_1642	Pacuta	HTAC	Hot	Amb	TP3	1642	HIMB	#b35806	Triploid	#d95f02	Group1	#1f78b4	T1
-Pacuta_HTAC_TP4_1767	Pacuta	HTAC	Hot	Amb	TP4	1767	Reef.42.43	#542788	Triploid	#d95f02	Group1	#1f78b4	T1
-Pacuta_HTAC_TP7_2072	Pacuta	HTAC	Hot	Amb	TP7	2072	HIMB	#b35806	Triploid	#d95f02	Group1	#1f78b4	T1
-Pacuta_HTAC_TP10_2064	Pacuta	HTAC	Hot	Amb	TP10	2064	HIMB	#b35806	Triploid	#d95f02	Group2	#33a02c	T1
-Pacuta_HTAC_TP11_1596	Pacuta	HTAC	Hot	Amb	TP11	1596	Reef.42.43	#542788	Triploid	#d95f02	Group2	#33a02c	T1
-Pacuta_HTAC_TP1_2414	Pacuta	HTAC	Hot	Amb	TP1	2414	Reef.18	#d8daeb	Triploid	#d95f02	Group2	#33a02c	T1
-Pacuta_HTAC_TP5_1707	Pacuta	HTAC	Hot	Amb	TP5	1707	Reef.11.13	#fee0b6	Triploid	#d95f02	Group2	#33a02c	T1
-Pacuta_HTAC_TP6_1466	Pacuta	HTAC	Hot	Amb	TP6	1466	Lilipuna.Fringe	#f1a340	Triploid	#d95f02	Group2	#33a02c	T1
-Pacuta_HTAC_TP7_1728	Pacuta	HTAC	Hot	Amb	TP7	1728	Reef.18	#d8daeb	Triploid	#d95f02	Group2	#33a02c	T1
-Pacuta_HTAC_TP8_2513	Pacuta	HTAC	Hot	Amb	TP8	2513	Reef.18	#d8daeb	Triploid	#d95f02	Group2	#33a02c	T1
-Pacuta_HTAC_TP9_1696	Pacuta	HTAC	Hot	Amb	TP9	1696	Lilipuna.Fringe	#f1a340	Triploid	#d95f02	Group2	#33a02c	T1
-Pacuta_HTAC_TP10_1536	Pacuta	HTAC	Hot	Amb	TP10	1536	Reef.35.36	#998ec3	Triploid	#d95f02	Group3	#c51b7d	T2
-Pacuta_HTAC_TP11_1582	Pacuta	HTAC	Hot	Amb	TP11	1582	Lilipuna.Fringe	#f1a340	Triploid	#d95f02	Group3	#c51b7d	T2
-Pacuta_HTAC_TP11_1647	Pacuta	HTAC	Hot	Amb	TP11	1647	HIMB	#b35806	Triploid	#d95f02	Group3	#c51b7d	T2
-Pacuta_HTAC_TP1_2005	Pacuta	HTAC	Hot	Amb	TP1	2005	Reef.18	#d8daeb	Triploid	#d95f02	Group3	#c51b7d	T2
-Pacuta_HTAC_TP3_1617	Pacuta	HTAC	Hot	Amb	TP3	1617	Reef.42.43	#542788	Triploid	#d95f02	Group3	#c51b7d	T2
-Pacuta_HTAC_TP4_1701	Pacuta	HTAC	Hot	Amb	TP4	1701	Reef.18	#d8daeb	Triploid	#d95f02	Group3	#c51b7d	T2
-Pacuta_HTAC_TP8_1765	Pacuta	HTAC	Hot	Amb	TP8	1765	Reef.42.43	#542788	Triploid	#d95f02	Group3	#c51b7d	T2
-Pacuta_HTAC_TP4_1581	Pacuta	HTAC	Hot	Amb	TP4	1581	Lilipuna.Fringe	#f1a340	Triploid	#d95f02	Group4	#6a3d9a	T2
-Pacuta_HTAC_TP6_1744	Pacuta	HTAC	Hot	Amb	TP6	1744	Reef.35.36	#998ec3	Diploid	#1b9e77	Group5	#ff7f00	
-Pacuta_HTAC_TP9_1302	Pacuta	HTAC	Hot	Amb	TP9	1302	Reef.35.36	#998ec3	Diploid	#1b9e77	Group5	#ff7f00	
-Pacuta_HTAC_TP9_1486	Pacuta	HTAC	Hot	Amb	TP9	1486	Reef.11.13	#fee0b6	Diploid	#1b9e77	Group5	#ff7f00	
-Pacuta_HTAC_TP10_1225	Pacuta	HTAC	Hot	Amb	TP10	1225	HIMB	#b35806	Diploid	#1b9e77	Group6	#e31a1c	D
-Pacuta_HTAC_TP3_2026	Pacuta	HTAC	Hot	Amb	TP3	2026	Reef.42.43	#542788	Diploid	#1b9e77	Group6	#e31a1c	D
-Pacuta_HTAC_TP5_1303	Pacuta	HTAC	Hot	Amb	TP5	1303	Reef.35.36	#998ec3	Diploid	#1b9e77	Group6	#e31a1c	D
-Pacuta_HTAC_TP5_1571	Pacuta	HTAC	Hot	Amb	TP5	1571	Reef.35.36	#998ec3	Diploid	#1b9e77	Group6	#e31a1c	D
-Pacuta_HTAC_TP6_1330	Pacuta	HTAC	Hot	Amb	TP6	1330	Reef.35.36	#998ec3	Diploid	#1b9e77	Group6	#e31a1c	D
-Pacuta_HTAC_TP7_1487	Pacuta	HTAC	Hot	Amb	TP7	1487	Lilipuna.Fringe	#f1a340	Diploid	#1b9e77	Group6	#e31a1c	D
-Pacuta_HTAC_TP8_1329	Pacuta	HTAC	Hot	Amb	TP8	1329	Lilipuna.Fringe	#f1a340	Diploid	#1b9e77	Group6	#e31a1c	D
-Pacuta_HTAC_TP1_1653	Pacuta	HTAC	Hot	Amb	TP1	1653	HIMB	#b35806	Diploid	#1b9e77	Group8	#000000	
-Pacuta_HTHC_TP10_2300	Pacuta	HTHC	Hot	High	TP10	2300	Reef.18	#d8daeb	Triploid	#d95f02	Group2	#33a02c	T1
-Pacuta_HTHC_TP3_1227	Pacuta	HTHC	Hot	High	TP3	1227	Reef.42.43	#542788	Triploid	#d95f02	Group2	#33a02c	T1
-Pacuta_HTHC_TP5_2087	Pacuta	HTHC	Hot	High	TP5	2087	HIMB	#b35806	Triploid	#d95f02	Group2	#33a02c	T1
-Pacuta_HTHC_TP6_1138	Pacuta	HTHC	Hot	High	TP6	1138	HIMB	#b35806	Triploid	#d95f02	Group2	#33a02c	T1
-Pacuta_HTHC_TP6_1595	Pacuta	HTHC	Hot	High	TP6	1595	HIMB	#b35806	Triploid	#d95f02	Group2	#33a02c	T1
-Pacuta_HTHC_TP8_1709	Pacuta	HTHC	Hot	High	TP8	1709	Lilipuna.Fringe	#f1a340	Triploid	#d95f02	Group2	#33a02c	T1
-Pacuta_HTHC_TP8_2304	Pacuta	HTHC	Hot	High	TP8	2304	Reef.18	#d8daeb	Triploid	#d95f02	Group2	#33a02c	T1
-Pacuta_HTHC_TP9_1131	Pacuta	HTHC	Hot	High	TP9	1131	HIMB	#b35806	Triploid	#d95f02	Group2	#33a02c	T1
-Pacuta_HTHC_TP9_2202	Pacuta	HTHC	Hot	High	TP9	2202	HIMB	#b35806	Triploid	#d95f02	Group2	#33a02c	T1
-Pacuta_HTHC_TP9_2305	Pacuta	HTHC	Hot	High	TP9	2305	Reef.18	#d8daeb	Triploid	#d95f02	Group2	#33a02c	T1
-Pacuta_HTHC_TP10_1238	Pacuta	HTHC	Hot	High	TP10	1238	Reef.42.43	#542788	Triploid	#d95f02	Group3	#c51b7d	T2
-Pacuta_HTHC_TP10_1732	Pacuta	HTHC	Hot	High	TP10	1732	Lilipuna.Fringe	#f1a340	Triploid	#d95f02	Group3	#c51b7d	T2
-Pacuta_HTHC_TP1_1239	Pacuta	HTHC	Hot	High	TP1	1239	Reef.42.43	#542788	Triploid	#d95f02	Group3	#c51b7d	T2
-Pacuta_HTHC_TP4_2195	Pacuta	HTHC	Hot	High	TP4	2195	Reef.42.43	#542788	Triploid	#d95f02	Group3	#c51b7d	T2
-Pacuta_HTHC_TP7_1090	Pacuta	HTHC	Hot	High	TP7	1090	Lilipuna.Fringe	#f1a340	Triploid	#d95f02	Group3	#c51b7d	T2
-Pacuta_HTHC_TP7_1820	Pacuta	HTHC	Hot	High	TP7	1820	Reef.11.13	#fee0b6	Triploid	#d95f02	Group3	#c51b7d	T2
-Pacuta_HTHC_TP4_1343	Pacuta	HTHC	Hot	High	TP4	1343	Lilipuna.Fringe	#f1a340	Triploid	#d95f02	Group4	#6a3d9a	T2
-Pacuta_HTHC_TP7_1427	Pacuta	HTHC	Hot	High	TP7	1427	Lilipuna.Fringe	#f1a340	Triploid	#d95f02	Group4	#6a3d9a	T2
-Pacuta_HTHC_TP8_1184	Pacuta	HTHC	Hot	High	TP8	1184	Lilipuna.Fringe	#f1a340	Triploid	#d95f02	Group4	#6a3d9a	T2
-Pacuta_HTHC_TP11_1416	Pacuta	HTHC	Hot	High	TP11	1416	Reef.11.13	#fee0b6	Diploid	#1b9e77	Group6	#e31a1c	D
-Pacuta_HTHC_TP1_1676	Pacuta	HTHC	Hot	High	TP1	1676	Reef.42.43	#542788	Diploid	#1b9e77	Group6	#e31a1c	D
-Pacuta_HTHC_TP3_1418	Pacuta	HTHC	Hot	High	TP3	1418	Lilipuna.Fringe	#f1a340	Diploid	#1b9e77	Group6	#e31a1c	D
-Pacuta_HTHC_TP3_2527	Pacuta	HTHC	Hot	High	TP3	2527	Reef.18	#d8daeb	Diploid	#1b9e77	Group6	#e31a1c	D
-Pacuta_HTHC_TP4_1169	Pacuta	HTHC	Hot	High	TP4	1169	Reef.35.36	#998ec3	Diploid	#1b9e77	Group6	#e31a1c	D
-Pacuta_HTHC_TP5_1168	Pacuta	HTHC	Hot	High	TP5	1168	Reef.35.36	#998ec3	Diploid	#1b9e77	Group6	#e31a1c	D
-Pacuta_HTHC_TP1_2210	Pacuta	HTHC	Hot	High	TP1	2210	Reef.42.43	#542788	Diploid	#1b9e77	Group7	#b15928	
-Pacuta_HTHC_TP6_1721	Pacuta	HTHC	Hot	High	TP6	1721	Lilipuna.Fringe	#f1a340	Diploid	#1b9e77	Group8	#000000	
-Pacuta_HTHC_TP11_2185	Pacuta	HTHC	Hot	High	TP11	2185	HIMB	#b35806	Triploid	#d95f02	Ungroup	#808080	
-Pacuta_HTHC_TP5_1415	Pacuta	HTHC	Hot	High	TP5	1415	Reef.11.13	#fee0b6	Diploid	#1b9e77	Ungroup	#808080	
+sample	species	treatment	temp	pco2	timepoint	timename	plugid	reef	reef_color	ploidy	ploidy_color	group	group_color	treesplit
+Pacuta_ATAC_TP1_2363	Pacuta	ATAC	Amb	Amb	TP1	0_hour	2363	Reef.18	#d8daeb	Triploid	#d95f02	Group3	#c51b7d	T2
+Pacuta_ATAC_TP1_1043	Pacuta	ATAC	Amb	Amb	TP1	0_hour	1043	Lilipuna.Fringe	#f1a340	Triploid	#d95f02	Group4	#6a3d9a	T2
+Pacuta_ATAC_TP1_1775	Pacuta	ATAC	Amb	Amb	TP1	0_hour	1775	Reef.42.43	#542788	Diploid	#1b9e77	Group5	#ff7f00	
+Pacuta_ATHC_TP1_2743	Pacuta	ATHC	Amb	High	TP1	0_hour	2743	Lilipuna.Fringe	#f1a340	Triploid	#d95f02	Group4	#6a3d9a	T2
+Pacuta_ATHC_TP1_1207	Pacuta	ATHC	Amb	High	TP1	0_hour	1207	Reef.11.13	#fee0b6	Diploid	#1b9e77	Group6	#e31a1c	D
+Pacuta_ATHC_TP1_2977	Pacuta	ATHC	Amb	High	TP1	0_hour	2977	Reef.11.13	#fee0b6	Diploid	#1b9e77	Group6	#e31a1c	D
+Pacuta_HTAC_TP1_2414	Pacuta	HTAC	Hot	Amb	TP1	0_hour	2414	Reef.18	#d8daeb	Triploid	#d95f02	Group2	#33a02c	T1
+Pacuta_HTAC_TP1_2005	Pacuta	HTAC	Hot	Amb	TP1	0_hour	2005	Reef.18	#d8daeb	Triploid	#d95f02	Group3	#c51b7d	T2
+Pacuta_HTAC_TP1_1653	Pacuta	HTAC	Hot	Amb	TP1	0_hour	1653	HIMB	#b35806	Diploid	#1b9e77	Group8	#000000	
+Pacuta_HTHC_TP1_1239	Pacuta	HTHC	Hot	High	TP1	0_hour	1239	Reef.42.43	#542788	Triploid	#d95f02	Group3	#c51b7d	T2
+Pacuta_HTHC_TP1_1676	Pacuta	HTHC	Hot	High	TP1	0_hour	1676	Reef.42.43	#542788	Diploid	#1b9e77	Group6	#e31a1c	D
+Pacuta_HTHC_TP1_2210	Pacuta	HTHC	Hot	High	TP1	0_hour	2210	Reef.42.43	#542788	Diploid	#1b9e77	Group7	#b15928	
+Pacuta_ATAC_TP10_1559	Pacuta	ATAC	Amb	Amb	TP10	8_week	1559	Lilipuna.Fringe	#f1a340	Triploid	#d95f02	Group3	#c51b7d	T2
+Pacuta_ATAC_TP10_1641	Pacuta	ATAC	Amb	Amb	TP10	8_week	1641	HIMB	#b35806	Triploid	#d95f02	Group3	#c51b7d	T2
+Pacuta_ATAC_TP10_1159	Pacuta	ATAC	Amb	Amb	TP10	8_week	1159	Reef.42.43	#542788	Diploid	#1b9e77	Group5	#ff7f00	
+Pacuta_ATHC_TP10_2197	Pacuta	ATHC	Amb	High	TP10	8_week	2197	Reef.35.36	#998ec3	Diploid	#1b9e77	Group6	#e31a1c	D
+Pacuta_ATHC_TP10_1205	Pacuta	ATHC	Amb	High	TP10	8_week	1205	Reef.35.36	#998ec3	Diploid	#1b9e77	Ungroup	#808080	
+Pacuta_ATHC_TP10_2550	Pacuta	ATHC	Amb	High	TP10	8_week	2550	Reef.18	#d8daeb	Diploid	#1b9e77	Ungroup	#808080	
+Pacuta_HTAC_TP10_2064	Pacuta	HTAC	Hot	Amb	TP10	8_week	2064	HIMB	#b35806	Triploid	#d95f02	Group2	#33a02c	T1
+Pacuta_HTAC_TP10_1536	Pacuta	HTAC	Hot	Amb	TP10	8_week	1536	Reef.35.36	#998ec3	Triploid	#d95f02	Group3	#c51b7d	T2
+Pacuta_HTAC_TP10_1225	Pacuta	HTAC	Hot	Amb	TP10	8_week	1225	HIMB	#b35806	Diploid	#1b9e77	Group6	#e31a1c	D
+Pacuta_HTHC_TP10_2300	Pacuta	HTHC	Hot	High	TP10	8_week	2300	Reef.18	#d8daeb	Triploid	#d95f02	Group2	#33a02c	T1
+Pacuta_HTHC_TP10_1238	Pacuta	HTHC	Hot	High	TP10	8_week	1238	Reef.42.43	#542788	Triploid	#d95f02	Group3	#c51b7d	T2
+Pacuta_HTHC_TP10_1732	Pacuta	HTHC	Hot	High	TP10	8_week	1732	Lilipuna.Fringe	#f1a340	Triploid	#d95f02	Group3	#c51b7d	T2
+Pacuta_ATAC_TP11_1777	Pacuta	ATAC	Amb	Amb	TP11	12_week	1777	HIMB	#b35806	Triploid	#d95f02	Group1	#1f78b4	T1
+Pacuta_ATAC_TP11_1103	Pacuta	ATAC	Amb	Amb	TP11	12_week	1103	Reef.42.43	#542788	Triploid	#d95f02	Group2	#33a02c	T1
+Pacuta_ATAC_TP11_2306	Pacuta	ATAC	Amb	Amb	TP11	12_week	2306	Reef.18	#d8daeb	Triploid	#d95f02	Group2	#33a02c	T1
+Pacuta_ATHC_TP11_1147	Pacuta	ATHC	Amb	High	TP11	12_week	1147	HIMB	#b35806	Triploid	#d95f02	Group2	#33a02c	T1
+Pacuta_ATHC_TP11_2668	Pacuta	ATHC	Amb	High	TP11	12_week	2668	Lilipuna.Fringe	#f1a340	Diploid	#1b9e77	Group6	#e31a1c	D
+Pacuta_ATHC_TP11_2879	Pacuta	ATHC	Amb	High	TP11	12_week	2879	HIMB	#b35806	Diploid	#1b9e77	Group6	#e31a1c	D
+Pacuta_HTAC_TP11_1596	Pacuta	HTAC	Hot	Amb	TP11	12_week	1596	Reef.42.43	#542788	Triploid	#d95f02	Group2	#33a02c	T1
+Pacuta_HTAC_TP11_1582	Pacuta	HTAC	Hot	Amb	TP11	12_week	1582	Lilipuna.Fringe	#f1a340	Triploid	#d95f02	Group3	#c51b7d	T2
+Pacuta_HTAC_TP11_1647	Pacuta	HTAC	Hot	Amb	TP11	12_week	1647	HIMB	#b35806	Triploid	#d95f02	Group3	#c51b7d	T2
+Pacuta_HTHC_TP11_1416	Pacuta	HTHC	Hot	High	TP11	12_week	1416	Reef.11.13	#fee0b6	Diploid	#1b9e77	Group6	#e31a1c	D
+Pacuta_HTHC_TP11_2185	Pacuta	HTHC	Hot	High	TP11	12_week	2185	HIMB	#b35806	Triploid	#d95f02	Ungroup	#808080	
+Pacuta_ATAC_TP3_1041	Pacuta	ATAC	Amb	Amb	TP3	6_hour	1041	Reef.11.13	#fee0b6	Triploid	#d95f02	Group2	#33a02c	T1
+Pacuta_ATAC_TP3_1637	Pacuta	ATAC	Amb	Amb	TP3	6_hour	1637	Reef.11.13	#fee0b6	Triploid	#d95f02	Group2	#33a02c	T1
+Pacuta_ATAC_TP3_1471	Pacuta	ATAC	Amb	Amb	TP3	6_hour	1471	Reef.35.36	#998ec3	Triploid	#d95f02	Group3	#c51b7d	T2
+Pacuta_ATHC_TP3_2534	Pacuta	ATHC	Amb	High	TP3	6_hour	2534	Reef.18	#d8daeb	Triploid	#d95f02	Group2	#33a02c	T1
+Pacuta_ATHC_TP3_2750	Pacuta	ATHC	Amb	High	TP3	6_hour	2750	Reef.42.43	#542788	Triploid	#d95f02	Group4	#6a3d9a	T2
+Pacuta_ATHC_TP3_1219	Pacuta	ATHC	Amb	High	TP3	6_hour	1219	Reef.35.36	#998ec3	Diploid	#1b9e77	Group6	#e31a1c	D
+Pacuta_HTAC_TP3_1642	Pacuta	HTAC	Hot	Amb	TP3	6_hour	1642	HIMB	#b35806	Triploid	#d95f02	Group1	#1f78b4	T1
+Pacuta_HTAC_TP3_1617	Pacuta	HTAC	Hot	Amb	TP3	6_hour	1617	Reef.42.43	#542788	Triploid	#d95f02	Group3	#c51b7d	T2
+Pacuta_HTAC_TP3_2026	Pacuta	HTAC	Hot	Amb	TP3	6_hour	2026	Reef.42.43	#542788	Diploid	#1b9e77	Group6	#e31a1c	D
+Pacuta_HTHC_TP3_1227	Pacuta	HTHC	Hot	High	TP3	6_hour	1227	Reef.42.43	#542788	Triploid	#d95f02	Group2	#33a02c	T1
+Pacuta_HTHC_TP3_1418	Pacuta	HTHC	Hot	High	TP3	6_hour	1418	Lilipuna.Fringe	#f1a340	Diploid	#1b9e77	Group6	#e31a1c	D
+Pacuta_HTHC_TP3_2527	Pacuta	HTHC	Hot	High	TP3	6_hour	2527	Reef.18	#d8daeb	Diploid	#1b9e77	Group6	#e31a1c	D
+Pacuta_ATAC_TP4_1762	Pacuta	ATAC	Amb	Amb	TP4	12_hour	1762	Reef.42.43	#542788	Triploid	#d95f02	Group2	#33a02c	T1
+Pacuta_ATAC_TP4_1060	Pacuta	ATAC	Amb	Amb	TP4	12_hour	1060	Reef.18	#d8daeb	Triploid	#d95f02	Group3	#c51b7d	T2
+Pacuta_ATAC_TP4_2002	Pacuta	ATAC	Amb	Amb	TP4	12_hour	2002	Reef.42.43	#542788	Triploid	#d95f02	Group3	#c51b7d	T2
+Pacuta_ATHC_TP4_2733	Pacuta	ATHC	Amb	High	TP4	12_hour	2733	Reef.42.43	#542788	Triploid	#d95f02	Group1	#1f78b4	T1
+Pacuta_ATHC_TP4_1220	Pacuta	ATHC	Amb	High	TP4	12_hour	1220	Lilipuna.Fringe	#f1a340	Triploid	#d95f02	Group2	#33a02c	T1
+Pacuta_ATHC_TP4_2993	Pacuta	ATHC	Amb	High	TP4	12_hour	2993	Reef.11.13	#fee0b6	Diploid	#1b9e77	Group6	#e31a1c	D
+Pacuta_HTAC_TP4_1767	Pacuta	HTAC	Hot	Amb	TP4	12_hour	1767	Reef.42.43	#542788	Triploid	#d95f02	Group1	#1f78b4	T1
+Pacuta_HTAC_TP4_1701	Pacuta	HTAC	Hot	Amb	TP4	12_hour	1701	Reef.18	#d8daeb	Triploid	#d95f02	Group3	#c51b7d	T2
+Pacuta_HTAC_TP4_1581	Pacuta	HTAC	Hot	Amb	TP4	12_hour	1581	Lilipuna.Fringe	#f1a340	Triploid	#d95f02	Group4	#6a3d9a	T2
+Pacuta_HTHC_TP4_2195	Pacuta	HTHC	Hot	High	TP4	12_hour	2195	Reef.42.43	#542788	Triploid	#d95f02	Group3	#c51b7d	T2
+Pacuta_HTHC_TP4_1343	Pacuta	HTHC	Hot	High	TP4	12_hour	1343	Lilipuna.Fringe	#f1a340	Triploid	#d95f02	Group4	#6a3d9a	T2
+Pacuta_HTHC_TP4_1169	Pacuta	HTHC	Hot	High	TP4	12_hour	1169	Reef.35.36	#998ec3	Diploid	#1b9e77	Group6	#e31a1c	D
+Pacuta_ATAC_TP5_1563	Pacuta	ATAC	Amb	Amb	TP5	30_hour	1563	Lilipuna.Fringe	#f1a340	Triploid	#d95f02	Group3	#c51b7d	T2
+Pacuta_ATAC_TP5_1757	Pacuta	ATAC	Amb	Amb	TP5	30_hour	1757	Reef.42.43	#542788	Triploid	#d95f02	Group3	#c51b7d	T2
+Pacuta_ATAC_TP5_1059	Pacuta	ATAC	Amb	Amb	TP5	30_hour	1059	Reef.11.13	#fee0b6	Diploid	#1b9e77	Group7	#b15928	
+Pacuta_ATHC_TP5_2877	Pacuta	ATHC	Amb	High	TP5	30_hour	2877	HIMB	#b35806	Triploid	#d95f02	Group2	#33a02c	T1
+Pacuta_ATHC_TP5_2212	Pacuta	ATHC	Amb	High	TP5	30_hour	2212	Reef.35.36	#998ec3	Diploid	#1b9e77	Group5	#ff7f00	
+Pacuta_ATHC_TP5_1296	Pacuta	ATHC	Amb	High	TP5	30_hour	1296	Reef.11.13	#fee0b6	Diploid	#1b9e77	Group6	#e31a1c	D
+Pacuta_HTAC_TP5_1707	Pacuta	HTAC	Hot	Amb	TP5	30_hour	1707	Reef.11.13	#fee0b6	Triploid	#d95f02	Group2	#33a02c	T1
+Pacuta_HTAC_TP5_1303	Pacuta	HTAC	Hot	Amb	TP5	30_hour	1303	Reef.35.36	#998ec3	Diploid	#1b9e77	Group6	#e31a1c	D
+Pacuta_HTAC_TP5_1571	Pacuta	HTAC	Hot	Amb	TP5	30_hour	1571	Reef.35.36	#998ec3	Diploid	#1b9e77	Group6	#e31a1c	D
+Pacuta_HTHC_TP5_2087	Pacuta	HTHC	Hot	High	TP5	30_hour	2087	HIMB	#b35806	Triploid	#d95f02	Group2	#33a02c	T1
+Pacuta_HTHC_TP5_1168	Pacuta	HTHC	Hot	High	TP5	30_hour	1168	Reef.35.36	#998ec3	Diploid	#1b9e77	Group6	#e31a1c	D
+Pacuta_HTHC_TP5_1415	Pacuta	HTHC	Hot	High	TP5	30_hour	1415	Reef.11.13	#fee0b6	Diploid	#1b9e77	Ungroup	#808080	
+Pacuta_ATAC_TP6_1542	Pacuta	ATAC	Amb	Amb	TP6	1_week	1542	Lilipuna.Fringe	#f1a340	Triploid	#d95f02	Group4	#6a3d9a	T2
+Pacuta_ATAC_TP6_1468	Pacuta	ATAC	Amb	Amb	TP6	1_week	1468	Reef.35.36	#998ec3	Diploid	#1b9e77	Group5	#ff7f00	
+Pacuta_ATAC_TP6_1050	Pacuta	ATAC	Amb	Amb	TP6	1_week	1050	Reef.18	#d8daeb	Diploid	#1b9e77	Group6	#e31a1c	D
+Pacuta_ATHC_TP6_2870	Pacuta	ATHC	Amb	High	TP6	1_week	2870	HIMB	#b35806	Triploid	#d95f02	Group2	#33a02c	T1
+Pacuta_ATHC_TP6_2999	Pacuta	ATHC	Amb	High	TP6	1_week	2999	Lilipuna.Fringe	#f1a340	Diploid	#1b9e77	Group6	#e31a1c	D
+Pacuta_ATHC_TP6_1254	Pacuta	ATHC	Amb	High	TP6	1_week	1254	Reef.42.43	#542788	Triploid	#d95f02	Ungroup	#808080	
+Pacuta_HTAC_TP6_1466	Pacuta	HTAC	Hot	Amb	TP6	1_week	1466	Lilipuna.Fringe	#f1a340	Triploid	#d95f02	Group2	#33a02c	T1
+Pacuta_HTAC_TP6_1744	Pacuta	HTAC	Hot	Amb	TP6	1_week	1744	Reef.35.36	#998ec3	Diploid	#1b9e77	Group5	#ff7f00	
+Pacuta_HTAC_TP6_1330	Pacuta	HTAC	Hot	Amb	TP6	1_week	1330	Reef.35.36	#998ec3	Diploid	#1b9e77	Group6	#e31a1c	D
+Pacuta_HTHC_TP6_1138	Pacuta	HTHC	Hot	High	TP6	1_week	1138	HIMB	#b35806	Triploid	#d95f02	Group2	#33a02c	T1
+Pacuta_HTHC_TP6_1595	Pacuta	HTHC	Hot	High	TP6	1_week	1595	HIMB	#b35806	Triploid	#d95f02	Group2	#33a02c	T1
+Pacuta_HTHC_TP6_1721	Pacuta	HTHC	Hot	High	TP6	1_week	1721	Lilipuna.Fringe	#f1a340	Diploid	#1b9e77	Group8	#000000	
+Pacuta_ATAC_TP7_2413	Pacuta	ATAC	Amb	Amb	TP7	2_week	2413	Reef.18	#d8daeb	Triploid	#d95f02	Group2	#33a02c	T1
+Pacuta_ATAC_TP7_1047	Pacuta	ATAC	Amb	Amb	TP7	2_week	1047	Lilipuna.Fringe	#f1a340	Diploid	#1b9e77	Group6	#e31a1c	D
+Pacuta_ATAC_TP7_1445	Pacuta	ATAC	Amb	Amb	TP7	2_week	1445	Reef.11.13	#fee0b6	Diploid	#1b9e77	Ungroup	#808080	
+Pacuta_ATHC_TP7_2878	Pacuta	ATHC	Amb	High	TP7	2_week	2878	HIMB	#b35806	Triploid	#d95f02	Group2	#33a02c	T1
+Pacuta_ATHC_TP7_2409	Pacuta	ATHC	Amb	High	TP7	2_week	2409	Lilipuna.Fringe	#f1a340	Triploid	#d95f02	Group3	#c51b7d	T2
+Pacuta_ATHC_TP7_1281	Pacuta	ATHC	Amb	High	TP7	2_week	1281	Reef.35.36	#998ec3	Diploid	#1b9e77	Group6	#e31a1c	D
+Pacuta_HTAC_TP7_2072	Pacuta	HTAC	Hot	Amb	TP7	2_week	2072	HIMB	#b35806	Triploid	#d95f02	Group1	#1f78b4	T1
+Pacuta_HTAC_TP7_1728	Pacuta	HTAC	Hot	Amb	TP7	2_week	1728	Reef.18	#d8daeb	Triploid	#d95f02	Group2	#33a02c	T1
+Pacuta_HTAC_TP7_1487	Pacuta	HTAC	Hot	Amb	TP7	2_week	1487	Lilipuna.Fringe	#f1a340	Diploid	#1b9e77	Group6	#e31a1c	D
+Pacuta_HTHC_TP7_1090	Pacuta	HTHC	Hot	High	TP7	2_week	1090	Lilipuna.Fringe	#f1a340	Triploid	#d95f02	Group3	#c51b7d	T2
+Pacuta_HTHC_TP7_1820	Pacuta	HTHC	Hot	High	TP7	2_week	1820	Reef.11.13	#fee0b6	Triploid	#d95f02	Group3	#c51b7d	T2
+Pacuta_HTHC_TP7_1427	Pacuta	HTHC	Hot	High	TP7	2_week	1427	Lilipuna.Fringe	#f1a340	Triploid	#d95f02	Group4	#6a3d9a	T2
+Pacuta_ATAC_TP8_1051	Pacuta	ATAC	Amb	Amb	TP8	4_week	1051	Reef.11.13	#fee0b6	Triploid	#d95f02	Group1	#1f78b4	T1
+Pacuta_ATAC_TP8_2012	Pacuta	ATAC	Amb	Amb	TP8	4_week	2012	Reef.42.43	#542788	Triploid	#d95f02	Group2	#33a02c	T1
+Pacuta_ATAC_TP8_1755	Pacuta	ATAC	Amb	Amb	TP8	4_week	1755	Reef.42.43	#542788	Diploid	#1b9e77	Group5	#ff7f00	
+Pacuta_ATHC_TP8_1459	Pacuta	ATHC	Amb	High	TP8	4_week	1459	Reef.18	#d8daeb	Triploid	#d95f02	Group1	#1f78b4	T1
+Pacuta_ATHC_TP8_2564	Pacuta	ATHC	Amb	High	TP8	4_week	2564	Reef.18	#d8daeb	Triploid	#d95f02	Group3	#c51b7d	T2
+Pacuta_ATHC_TP8_2861	Pacuta	ATHC	Amb	High	TP8	4_week	2861	HIMB	#b35806	Diploid	#1b9e77	Group6	#e31a1c	D
+Pacuta_HTAC_TP8_2513	Pacuta	HTAC	Hot	Amb	TP8	4_week	2513	Reef.18	#d8daeb	Triploid	#d95f02	Group2	#33a02c	T1
+Pacuta_HTAC_TP8_1765	Pacuta	HTAC	Hot	Amb	TP8	4_week	1765	Reef.42.43	#542788	Triploid	#d95f02	Group3	#c51b7d	T2
+Pacuta_HTAC_TP8_1329	Pacuta	HTAC	Hot	Amb	TP8	4_week	1329	Lilipuna.Fringe	#f1a340	Diploid	#1b9e77	Group6	#e31a1c	D
+Pacuta_HTHC_TP8_1709	Pacuta	HTHC	Hot	High	TP8	4_week	1709	Lilipuna.Fringe	#f1a340	Triploid	#d95f02	Group2	#33a02c	T1
+Pacuta_HTHC_TP8_2304	Pacuta	HTHC	Hot	High	TP8	4_week	2304	Reef.18	#d8daeb	Triploid	#d95f02	Group2	#33a02c	T1
+Pacuta_HTHC_TP8_1184	Pacuta	HTHC	Hot	High	TP8	4_week	1184	Lilipuna.Fringe	#f1a340	Triploid	#d95f02	Group4	#6a3d9a	T2
+Pacuta_ATAC_TP9_2357	Pacuta	ATAC	Amb	Amb	TP9	6_week	2357	Reef.18	#d8daeb	Triploid	#d95f02	Group2	#33a02c	T1
+Pacuta_ATAC_TP9_1594	Pacuta	ATAC	Amb	Amb	TP9	6_week	1594	Reef.35.36	#998ec3	Triploid	#d95f02	Group3	#c51b7d	T2
+Pacuta_ATAC_TP9_1141	Pacuta	ATAC	Amb	Amb	TP9	6_week	1141	Reef.42.43	#542788	Diploid	#1b9e77	Group5	#ff7f00	
+Pacuta_ATHC_TP9_1451	Pacuta	ATHC	Amb	High	TP9	6_week	1451	Reef.18	#d8daeb	Triploid	#d95f02	Group2	#33a02c	T1
+Pacuta_ATHC_TP9_2873	Pacuta	ATHC	Amb	High	TP9	6_week	2873	HIMB	#b35806	Triploid	#d95f02	Group2	#33a02c	T1
+Pacuta_ATHC_TP9_2979	Pacuta	ATHC	Amb	High	TP9	6_week	2979	Reef.35.36	#998ec3	Diploid	#1b9e77	Group6	#e31a1c	D
+Pacuta_HTAC_TP9_1696	Pacuta	HTAC	Hot	Amb	TP9	6_week	1696	Lilipuna.Fringe	#f1a340	Triploid	#d95f02	Group2	#33a02c	T1
+Pacuta_HTAC_TP9_1302	Pacuta	HTAC	Hot	Amb	TP9	6_week	1302	Reef.35.36	#998ec3	Diploid	#1b9e77	Group5	#ff7f00	
+Pacuta_HTAC_TP9_1486	Pacuta	HTAC	Hot	Amb	TP9	6_week	1486	Reef.11.13	#fee0b6	Diploid	#1b9e77	Group5	#ff7f00	
+Pacuta_HTHC_TP9_1131	Pacuta	HTHC	Hot	High	TP9	6_week	1131	HIMB	#b35806	Triploid	#d95f02	Group2	#33a02c	T1
+Pacuta_HTHC_TP9_2202	Pacuta	HTHC	Hot	High	TP9	6_week	2202	HIMB	#b35806	Triploid	#d95f02	Group2	#33a02c	T1
+Pacuta_HTHC_TP9_2305	Pacuta	HTHC	Hot	High	TP9	6_week	2305	Reef.18	#d8daeb	Triploid	#d95f02	Group2	#33a02c	T1

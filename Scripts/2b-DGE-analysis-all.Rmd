@@ -1,0 +1,162 @@
+---
+title: "2b) Mcap Differential Gene Expression analysis"
+output:
+  pdf_document: default
+  html_notebook: default
+---
+
+```{r setup, include=FALSE}
+rm(list = ls()) #clear environment
+```
+
+*Note: Open Rproj first, then script. To easily use relative paths, click the down button next to knit and then click "Knit Directory --> Project Directory". This should make loading and saving files much easier.*
+
+## 1. Load packages and input data
+
+Load packages
+```{r, message=FALSE, warning=FALSE}
+library(edgeR, quietly = TRUE) #edgeR-v3.30.3
+library(vegan, quietly = TRUE)
+library(Dune, quietly = TRUE)
+library(ggplot2, quietly = TRUE) #ggplot2-v3.3.5
+library(tidyverse, quietly = TRUE) #tidyverse-v1.3.1
+# library(UpSetR, quietly = TRUE)
+# library(reshape2, quietly = TRUE)
+# library(factoextra, quietly = TRUE)
+# library(NbClust, quietly = TRUE)
+library(ComplexHeatmap, quietly = TRUE)
+library(DESeq2, quietly = TRUE)
+library(genefilter, quietly = TRUE)
+```
+Differential gene expression analysis for Montipora capitata with DESeq2
+
+##### Construct the DESeq dataset
+
+Load the input file containing the treatment information
+```{r}
+treatmentinfo <- read.csv("Sample_Info/samples_Mcapitata.annotations.txt", header = TRUE, sep = "\t", fileEncoding="UTF-8-BOM") #read in file
+head(treatmentinfo)
+```
+
+Merge the treatment and time_point columns into a new column , group. Set group as a factor.
+```{r}
+treatmentinfo <- filter(treatmentinfo, Treatment%in%c("ATAC", "HTAC") & Timepoint=="4_week")
+treatmentinfo$Treatment <- factor(treatmentinfo$Treatment, levels = c("ATAC","HTAC"))
+```
+
+Load the input file containing the gene count matrix
+```{r}
+gcount <- as.data.frame(read_delim("Genome_Info/Montipora_capitata_KBHIv3.gentrome.fa.gz.salmon.numreads.matrix", delim = "\t", col_names = TRUE, show_col_types = FALSE), fileEncoding="UTF-8-BOM") #read in file
+rownames(gcount) <- gcount$Name #makes "Name" the rowname
+gcount <- gcount[,-c(1)] #drops the "Name" column
+gcount <- round(gcount) #round 
+dim(gcount); head(gcount)[,1:3] #view dataset attributes
+gcount <- gcount[ ,treatmentinfo$Sample]
+colnames(gcount)==treatmentinfo$Sample
+```
+
+```{r}
+#create filter for the counts data
+filt <- filterfun(pOverA(0.5,10))
+gfilt <- genefilter(gcount, filt)
+#identify genes to keep by count filter
+keep <- gcount[gfilt,]
+#identify gene lists
+keep <- rownames(keep)
+#gene count data filtered in PoverA, P percent of the samples have counts over A
+gcount_filt <- as.data.frame(gcount[which(rownames(gcount) %in% keep),])
+dim(gcount_filt)
+```
+
+
+Create a DESeqDataSet design from gene count matrix and labels. Here we set the design to look at the interaction of time_point and treatment to test for any differences in gene expression across timepoints attributed to treatment.
+```{r}
+#Set DESeq2 design
+gdds <- DESeqDataSetFromMatrix(countData = as.data.frame(gcount_filt),
+                              colData = treatmentinfo,
+                              design = ~Treatment)
+```
+
+#### Differential Gene Expression Analysis
+
+##### Run DE analysis
+
+Run differential expression test using a Wald model. 
+```{r, message = FALSE}
+DEG <- DESeq(gdds) #run differential expression test by group using the Wald model
+```
+
+Explore significant p-values for treatment (HTAC vs ATAC)
+```{r, message = FALSE}
+DEG.results <- results(DEG, contrast= c("Treatment","HTAC","ATAC"),lfcThreshold=log2(1.5))
+head(DEG.results)
+sum(DEG.results$padj < 0.05, na.rm=TRUE)
+DEGs <- as.data.frame(subset(DEG.results, padj<0.05))
+results.ordered <- order(DEGs$padj) #Order p-values by smallest value first
+DEGs$gene_id  <- rownames(DEGs)
+rownames(DEGs) <- NULL
+write.csv(DEGs, "Output/1b-Mcap-1week-Temp-DEGs.csv")
+```
+
+We will now transform them with cpm for plotting
+Subset the gene count matrix by the list of DEGs
+```{r}
+DEGlist <- gdds[DEGs$gene_id,]
+```
+
+We know from before that our size factors are all less than 4, so we can use VST!
+```{r}
+Gvst <- vst(as.matrix(gcount_filt), blind=TRUE, fitType = "local") #apply a variance stabilizing transforamtion to minimize efplncts of small counts and normalize wrt library size
+DEGvst <- Gvst[DEGs$gene_id,]
+head(DEGvst) #view transformed gene count data
+dim(DEGvst)
+```
+
+Make a matrix for computing similarity
+```{r}
+mat <- DEGvst#[topVarGenes, ] #make an expression object
+mat <- mat - rowMeans(mat) #difference in expression compared to average across all samples
+```
+
+Make a heatmap 
+```{r}
+hmTreatment <- subset(treatmentinfo, select=c("Temperature"))
+hm_ann_col <- HeatmapAnnotation(df=hmTreatment, col = list(Temperature = c("Ambient" = "#1b9e77", "High" = "#d95f02"))) #make dataframe for column naming
+dend = cluster_within_group(mat, hmTreatment$Temperature)
+
+DEGheatmap <-  Heatmap(mat, cluster_columns = dend, column_split = 2,
+        name = "Gene expression (vst)", 
+        show_row_names = F, 
+        top_annotation = hm_ann_col, 
+        show_column_names = F, row_dend_side = "left" ,
+        column_dend_height = unit(0.5, "in"),
+        row_title_side = "right", row_title_rot = 0, row_dend_reorder = TRUE, 
+        row_gap = unit(2.5, "mm"), border = TRUE,
+        column_names_gp =  gpar(fontsize = 10))
+
+pdf("Output/2b-Mcap-4week-temperature-DEG-heatmap.pdf", width = 10.5, height = 7)
+draw(DEGheatmap)
+dev.off()
+```
+
+
+### Principle components plot of DEGs
+```{r}
+pca <- prcomp(t(mat)) #calculate eigengenes
+percentVar <- pca$sdev^2/sum(pca$sdev^2) #save % variation by PC1 and PC2
+d6 <- data.frame(treatmentinfo, PC1 = pca$x[, 1], PC2 = pca$x[, 2])
+DEG_PCA <- ggplot(data = d6, aes_string(x = "PC1", y = "PC2")) + 
+  geom_point(size = 4, aes(colour=Temperature)) + 
+  xlab(paste0("PC1: ", round(percentVar[1] * 100), "% variance")) + 
+  ylab(paste0("PC2: ", round(percentVar[2] * 100), "% variance")) + 
+  coord_fixed() + 
+  theme_bw() + #Set background color
+  theme(panel.border = element_blank(), # Set border
+        panel.grid.major = element_blank(), #Set major gridlines
+        panel.grid.minor = element_blank(), #Set minor gridlines
+        axis.line = element_line(colour = "black", size = 0.6), #Set axes color
+        plot.background=element_blank(), #Set the plot background
+        axis.title = element_text(size = 14), #Axis title size
+        axis.text = element_blank());DEG_PCA #Axis text size and view plot
+ggsave("Output/2b-Mcap-4week-temperature-DEGs-PCA.pdf", DEG_PCA)
+```

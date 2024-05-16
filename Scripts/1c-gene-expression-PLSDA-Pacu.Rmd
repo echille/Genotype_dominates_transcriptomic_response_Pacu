@@ -1,0 +1,257 @@
+---
+title: "PLS-DA of *P. acuta* gene expression"
+author: "Erin Chille"
+date: "05/09/2024"
+output:
+  pdf_document: default
+  html_notebook: default
+---
+
+
+```{r setup, include=FALSE}
+rm(list = ls()) #clear environment
+```
+
+*Note: Open Rproj first, then script. To easily use relative paths, click the down button next to knit and then click "Knit Directory --> Project Directory". This should make loading and saving files much easier.*
+
+## 1. Load packages and input data
+
+Load packages
+```{r, message=FALSE, warning=FALSE}
+library(edgeR, quietly = TRUE) #edgeR-v3.30.3
+library(vegan, quietly = TRUE)
+library(Dune, quietly = TRUE)
+library(ggplot2, quietly = TRUE) #ggplot2-v3.3.5
+library(tidyverse, quietly = TRUE) #tidyverse-v1.3.1
+library(Rmisc, quietly = TRUE)
+library(mixOmics, quietly = TRUE)
+#library(ggridges)
+#library(hrbrthemes)
+#library(viridis)
+
+```
+
+Load the input file containing the treatment information
+```{r}
+#treatment information
+treatmentinfo <- read.csv("Sample_Info/samples_Pacuta.annotations.txt", header = TRUE, sep = "\t", fileEncoding="UTF-8-BOM") #read in file
+top3groups <- c("Group2", "Group3", "Group6")
+treatmentinfo <- filter(treatmentinfo, group%in%top3groups)
+table(treatmentinfo$group)
+```
+
+Load the input file containing the gene count matrix
+```{r}
+#gene count matrix
+gcount <- as.data.frame(read_delim("Genome_Info/Pocillopora_acuta_KBHIv2.gentrome.fa.gz.salmon.numreads.matrix", delim = "\t", col_names = TRUE, show_col_types = FALSE), fileEncoding="UTF-8-BOM") #read in file
+rownames(gcount) <- gcount$Name #makes "Name" the rowname
+gcount <- gcount[,-c(1)] #drops the "Name" column
+gcount <- round(gcount) #round 
+dim(gcount); head(gcount)[,1:3] #view dataset attributes
+gcount <- gcount[,treatmentinfo$sample]
+```
+
+Determine library size
+```{r}
+libSize.df <- data.frame(libSize=colSums(gcount))
+```
+
+Make DGE object
+```{r}
+DGEdat <- DGEList(counts=as.matrix(gcount), samples=treatmentinfo,
+                  group=treatmentinfo$temp)
+dim(DGEdat$counts)
+```
+
+## 2. Pre-filtering
+```{r}
+lib.sizes.cpm <- colSums(gcount)/1000000
+lib.sizes.cpm <- tibble(sample=colnames(gcount), lib.size=lib.sizes.cpm)
+
+keep <- rowSums(cpm(gcount) > 3.33) >= 2
+table(keep)
+DGEdat <- DGEdat[keep, , keep.lib.sizes=FALSE]
+```
+
+##  3. Data normalization  
+```{r}
+DGEdat <- calcNormFactors(DGEdat)
+DGEdat$samples
+```
+
+##  4. Plot global gene expression  
+
+Log transform the counts matrix for the next plots
+```{r}
+DGEdat.cpm <- DGEdat #make a copy the edgeR dataset
+DGEdat.cpm$counts <- cpm(DGEdat.cpm$counts, log=TRUE, prior.count=5) #log transform the copy for the next plots
+```
+
+Run a principle coordinates analysis, all samples
+```{r}
+d <- data.frame(DGEdat.cpm$samples, name = colnames(DGEdat.cpm$counts), TP_temp=paste(DGEdat.cpm$samples$timename, DGEdat.cpm$samples$temp, sep="_")) #make a dataframe containing all plotting info
+#d <- filter(d, temp=="Hot")
+d$timename <- factor(d$timename, levels = c("0_hour", "6_hour", "12_hour", "30_hour", "1_week", "2_week", "4_week", "6_week", "8_week", "12_week"))
+ncol(DGEdat.cpm$counts[,d$sample])
+# Partial Least Squares Analysis
+mixOmic_plsda <- plsda(t(DGEdat.cpm$counts[,d$sample]), d$timename, ncomp = 85)
+plotVar(mixOmic_plsda, plot = F)
+plsda_plot <- biplot(mixOmic_plsda, var.axes = TRUE, cutoff = .8, ind.names = F); plsda_plot
+plotIndiv(mixOmic_plsda, ind.names = F, ellipse = TRUE, legend = TRUE)
+```
+
+Run a principle coordinates analysis, Hot samples
+```{r}
+d <- data.frame(DGEdat.cpm$samples, name = colnames(DGEdat.cpm$counts), TP_temp=paste(DGEdat.cpm$samples$timename, DGEdat.cpm$samples$temp, sep="_")) #make a dataframe containing all plotting info
+d$timename <- factor(d$timename, levels = c("0_hour", "6_hour", "12_hour", "30_hour", "1_week", "2_week", "4_week", "6_week", "8_week", "12_week"))
+d <- filter(d, temp=="Hot")
+ncol(DGEdat.cpm$counts[,d$sample])
+# Partial Least Squares Analysis
+mixOmic_plsda <- plsda(t(DGEdat.cpm$counts[,d$sample]), d$TP_temp, ncomp = 44)
+plotVar(mixOmic_plsda, plot = F)
+plsda_plot <- biplot(mixOmic_plsda, var.axes = TRUE, cutoff = .8, ind.names = F); plsda_plot
+plotIndiv(mixOmic_plsda, ind.names = F, ellipse = TRUE, legend = TRUE)
+```
+
+Run a principle coordinates analysis, Amb samples
+```{r}
+d <- data.frame(DGEdat.cpm$samples, name = colnames(DGEdat.cpm$counts), TP_temp=paste(DGEdat.cpm$samples$timename, DGEdat.cpm$samples$temp, sep="_")) #make a dataframe containing all plotting info
+d$timename <- factor(d$timename, levels = c("0_hour", "6_hour", "12_hour", "30_hour", "1_week", "2_week", "4_week", "6_week", "8_week", "12_week"))
+d <- filter(d, temp=="Amb")
+ncol(DGEdat.cpm$counts[,d$sample])
+# Partial Least Squares Analysis
+mixOmic_plsda <- plsda(t(DGEdat.cpm$counts[,d$sample]), d$TP_temp, ncomp = 41)
+plotVar(mixOmic_plsda, plot = F)
+plsda_plot <- biplot(mixOmic_plsda, var.axes = TRUE, cutoff = .8, ind.names = F); plsda_plot
+plotIndiv(mixOmic_plsda, ind.names = F, ellipse = TRUE, legend = TRUE)
+```
+
+# Emma script
+```{r}
+# set working directory and load necessary packages
+
+library(reshape2)
+#library(ggbiplot)
+library(broom)  # devtools::install_github("tidymodels/broom")
+library(cowplot)
+library(ggpubr)
+#library(ggfortify)
+library(ggrepel)
+library(gridExtra)
+#library(ggforce)
+# set seed
+set.seed(54321)
+```
+
+Load datasets
+```{r}
+d <- data.frame(DGEdat.cpm$samples, name = colnames(DGEdat.cpm$counts), TP_temp=paste(DGEdat.cpm$samples$timename, DGEdat.cpm$samples$temp, sep="_")) #make a dataframe 
+d$timename <- factor(d$timename, levels = c("0_hour", "6_hour", "12_hour", "30_hour", "1_week", "2_week", "4_week", "6_week", "8_week", "12_week"))
+```
+
+```{r}
+#PCA
+Mcap.pca.out <- prcomp(t(DGEdat.cpm$counts[,d$sample])) #, center=FALSE, scale=FALSE) #run PCA
+M.summary <- summary(Mcap.pca.out); M.summary #view results
+biplot(Mcap.pca.out) #plot results
+```
+
+```{r}
+Mcap.pca.out %>%
+  augment(d) %>% # add original dataset back in
+  ggplot(aes(.fittedPC1, .fittedPC7, color = group.1)) + 
+  geom_point(size = 3, color='black', aes(shape=temp, fill=group.1)) +
+  scale_shape_manual(guide="legend", values=c('Amb'=21, 'Hot'=24)) +
+  scale_fill_manual(guide="legend", values=c('Group2'="#FFBD5C", 'Group3'="#B873FF"#, 'Group6'="#4EB900"
+                                             )) +
+  #xlab(paste0("PC1: ", round(percentVar[1] * 100), "% variance")) +
+  #ylab(paste0("PC7: ", round(percentVar[7] * 100), "% variance")) +
+  coord_fixed() +
+  theme_bw() + #Set background color
+  stat_ellipse() +
+  theme(panel.border = element_blank(), # Set border
+        panel.grid.major = element_blank(), #Set major gridlines
+        panel.grid.minor = element_blank(), #Set minor gridlines
+        axis.line = element_line(colour = "black", size = 0.6), #Set axes color
+        plot.background=element_blank(), #Set the plot background
+        axis.title = element_text(size = 14)) + #Axis title sizet
+  guides(fill = guide_legend(override.aes = list(shape=21))) +
+  geom_point(size = 1.5, alpha=0.5) +
+  theme_half_open(12) + background_grid()+
+  stat_ellipse() +
+  theme_classic() +
+  #ggtitle("Montipora capitata") + 
+  #facet_grid(cols=vars(timename)) +
+  theme(plot.title = element_text(face = 'bold.italic', size = 14, hjust = 0)) +
+  theme(legend.title = element_text(size=12, face="bold"), legend.position = "none") +
+  #scale_color_manual(values = c("deepskyblue", "firebrick1"), aesthetics = c("colour")) +
+  xlab("PC1 24%") + ylab("PC7 2%")
+
+Mcap.pca.out %>%
+  augment(d) %>% # add original dataset back in
+  ggplot(aes(.fittedPC5, .fittedPC6, color = temp)) + 
+  geom_point(size = 1.5, alpha=0.5) +
+  theme_half_open(12) + background_grid()+
+  stat_ellipse() +
+  theme_classic() +
+  #ggtitle("Montipora capitata") + 
+  facet_grid(cols=vars(timename)) +
+  theme(plot.title = element_text(face = 'bold.italic', size = 14, hjust = 0)) +
+  theme(legend.title = element_text(size=12, face="bold"), legend.position = "none") +
+  #scale_color_manual(values = c("deepskyblue", "firebrick1"), aesthetics = c("colour")) +
+  xlab("PC5 23.76%") + ylab("PC6 16.09%")
+```
+
+```{r}
+Mcapitata.all <- Mcap.pca.out %>%
+  augment(d) %>% # add original dataset back in
+  group_by(timename, temp) %>%
+  mutate(PC5.mean = mean(.fittedPC5),
+         PC6.mean = mean(.fittedPC6))
+
+mcap.Hot.segments <- Mcapitata.all %>% subset(temp == "Hot") %>%
+  select(timename, temp, PC5.mean, PC6.mean) %>%
+  gather(variable, value, -(timename:temp)) %>%
+  unite(group, timename, variable) %>% distinct() %>%
+  spread(group, value)
+
+mcap.amb.segments <- Mcapitata.all %>% subset(temp == "Amb") %>%
+  select(timename, temp, PC5.mean, PC6.mean) %>%
+  gather(variable, value, -(timename:temp)) %>%
+  unite(group, timename, variable) %>% distinct() %>%
+  spread(group, value)
+```
+
+```{r}
+Mcapitata.all.fig <- ggplot(Mcapitata.all, aes(.fittedPC5, .fittedPC6, color = group.1)) + 
+  geom_segment(aes(x = `0_hour_PC5.mean`, y = `0_hour_PC6.mean`, xend = `6_hour_PC5.mean`, yend = `6_hour_PC6.mean`, colour = temp), data = mcap.Hot.segments, size=1, show.legend=FALSE) + # 0_hour to 6_hour Hot
+  geom_segment(aes(x = `6_hour_PC5.mean`, y = `6_hour_PC6.mean`, xend = `12_hour_PC5.mean`, yend = `12_hour_PC6.mean`, colour = temp), data = mcap.Hot.segments, size=1, show.legend=FALSE) + # 6_hour to 12_hour Hot
+    geom_segment(aes(x = `12_hour_PC5.mean`, y = `12_hour_PC6.mean`, xend = `30_hour_PC5.mean`, yend = `30_hour_PC6.mean`, colour = temp), data = mcap.Hot.segments, size=1, show.legend=FALSE) + # 12_hour to 30_hour Hot
+    geom_segment(aes(x = `30_hour_PC5.mean`, y = `30_hour_PC6.mean`, xend = `1_week_PC5.mean`, yend = `1_week_PC6.mean`, colour = temp), data = mcap.Hot.segments, size=1, show.legend=FALSE) + # 30_hour to 1_week Hot
+      geom_segment(aes(x = `1_week_PC5.mean`, y = `1_week_PC6.mean`, xend = `2_week_PC5.mean`, yend = `2_week_PC6.mean`, colour = temp), data = mcap.Hot.segments, size=1, show.legend=FALSE) + # 1_week to 2_week Hot
+  geom_segment(aes(x = `2_week_PC5.mean`, y = `2_week_PC6.mean`, xend = `4_week_PC5.mean`, yend = `4_week_PC6.mean`, colour = temp), data = mcap.Hot.segments, size=1, show.legend=FALSE) + # 2_week to 4_week Hot
+    geom_segment(aes(x = `4_week_PC5.mean`, y = `4_week_PC6.mean`, xend = `6_week_PC5.mean`, yend = `6_week_PC6.mean`, colour = temp), data = mcap.Hot.segments, size=1, show.legend=FALSE) + # 4_week to 8_week Hot
+  geom_segment(aes(x = `6_week_PC5.mean`, y = `6_week_PC6.mean`, xend = `8_week_PC5.mean`, yend = `8_week_PC6.mean`, colour = temp), data = mcap.Hot.segments, size=1, show.legend=FALSE) + # 4_week to 8_week Hot
+  geom_segment(aes(x = `8_week_PC5.mean`, y = `8_week_PC6.mean`, xend = `12_week_PC5.mean`, yend = `12_week_PC6.mean`, colour = temp), data = mcap.Hot.segments, size=1, show.legend=FALSE, arrow = arrow()) + # 8_week to 12_week Hot
+  geom_segment(aes(x = `0_hour_PC5.mean`, y = `0_hour_PC6.mean`, xend = `6_hour_PC5.mean`, yend = `6_hour_PC6.mean`, colour = temp), data = mcap.amb.segments, size=1, show.legend=FALSE) + # 0_hour to 6_hour amb
+  geom_segment(aes(x = `6_hour_PC5.mean`, y = `6_hour_PC6.mean`, xend = `12_hour_PC5.mean`, yend = `12_hour_PC6.mean`, colour = temp), data = mcap.amb.segments, size=1, show.legend=FALSE) + # 6_hour to 12_hour amb
+    geom_segment(aes(x = `12_hour_PC5.mean`, y = `12_hour_PC6.mean`, xend = `30_hour_PC5.mean`, yend = `30_hour_PC6.mean`, colour = temp), data = mcap.amb.segments, size=1, show.legend=FALSE) + # 12_hour to 30_hour amb
+    geom_segment(aes(x = `30_hour_PC5.mean`, y = `30_hour_PC6.mean`, xend = `1_week_PC5.mean`, yend = `1_week_PC6.mean`, colour = temp), data = mcap.amb.segments, size=1, show.legend=FALSE) + # 30_hour to 1_week amb
+      geom_segment(aes(x = `1_week_PC5.mean`, y = `1_week_PC6.mean`, xend = `2_week_PC5.mean`, yend = `2_week_PC6.mean`, colour = temp), data = mcap.amb.segments, size=1, show.legend=FALSE) + # 1_week to 2_week amb
+  geom_segment(aes(x = `2_week_PC5.mean`, y = `2_week_PC6.mean`, xend = `4_week_PC5.mean`, yend = `4_week_PC6.mean`, colour = temp), data = mcap.amb.segments, size=1, show.legend=FALSE) + # 2_week to 4_week AMB
+    geom_segment(aes(x = `4_week_PC5.mean`, y = `4_week_PC6.mean`, xend = `6_week_PC5.mean`, yend = `6_week_PC6.mean`, colour = temp), data = mcap.amb.segments, size=1, show.legend=FALSE) + # 4_week to 8_week amb
+  geom_segment(aes(x = `6_week_PC5.mean`, y = `6_week_PC6.mean`, xend = `8_week_PC5.mean`, yend = `8_week_PC6.mean`, colour = temp), data = mcap.amb.segments, size=1, show.legend=FALSE) + # 4_week to 8_week amb
+  geom_segment(aes(x = `8_week_PC5.mean`, y = `8_week_PC6.mean`, xend = `12_week_PC5.mean`, yend = `12_week_PC6.mean`, colour = temp), data = mcap.amb.segments, size=1, show.legend=FALSE, arrow = arrow()) + # 8_week to 12_week AMB
+  geom_point(size = 1.5, alpha=0.3) +
+  geom_point(aes(x=PC5.mean, y=PC6.mean), color="darkgrey") +
+  geom_text(size = 2, aes(PC5.mean, PC6.mean, label=timename), vjust=-1.5, color="black") +
+  theme_half_open(12) + background_grid() +
+  #ggtitle("Montipora capitata") + 
+  theme(legend.position = c(0.8, 0.9)) +
+  theme(plot.title = element_text(face = 'bold.italic', size = 14, hjust = 0)) +
+  theme(legend.title = element_text(size=12, face="bold")) +
+  #scale_color_manual(values = c("deepskyblue", "firebrick1"), aesthetics = c("colour")) +
+  xlab("PC5 23.76%") + ylab("PC6 16.09%"); Mcapitata.all.fig
+Mcapitata.all.fig 
+ggsave("Output/1c-Pacu-edgeR-allsamples-PCA-timename-arrows.pdf", Mcapitata.all.fig, width = 6, height = 5, units = c("in"))
+```

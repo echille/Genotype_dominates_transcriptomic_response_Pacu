@@ -1,0 +1,192 @@
+---
+title: "edgeR Workflow for gene expression PCA of *P. acuta*"
+author: "Erin Chille"
+date: "02/16/2023"
+output:
+  pdf_document: default
+  html_notebook: default
+---
+
+
+```{r setup, include=FALSE}
+rm(list = ls()) #clear environment
+```
+
+*Note: Open Rproj first, then script. To easily use relative paths, click the down button next to knit and then click "Knit Directory --> Project Directory". This should make loading and saving files much easier.*
+
+## 1. Load packages and input data
+
+Load packages
+```{r, message=FALSE, warning=FALSE}
+library(edgeR, quietly = TRUE) #edgeR-v3.30.3
+library(vegan, quietly = TRUE)
+library(Dune, quietly = TRUE)
+library(ggplot2, quietly = TRUE) #ggplot2-v3.3.5
+library(tidyverse, quietly = TRUE) #tidyverse-v1.3.1
+```
+
+Load the input file containing the treatment information
+```{r}
+#treatment information
+treatmentinfo <- read.csv("Sample_Info/samples_Pacuta.annotations.txt", header = TRUE, sep = "\t", fileEncoding="UTF-8-BOM") #read in file
+top3groups <- c("Group2", "Group3")
+treatmentinfo <- filter(treatmentinfo, group%in%top3groups)
+table(treatmentinfo$group)
+```
+
+Load the input file containing the gene count matrix
+```{r}
+#gene count matrix
+gcount <- as.data.frame(read_delim("Genome_Info/Pocillopora_acuta_KBHIv2.gentrome.fa.gz.salmon.numreads.matrix", delim = "\t", col_names = TRUE, show_col_types = FALSE), fileEncoding="UTF-8-BOM") #read in file
+rownames(gcount) <- gcount$Name #makes "Name" the rowname
+gcount <- gcount[,-c(1)] #drops the "Name" column
+gcount <- round(gcount) #round 
+dim(gcount); head(gcount)[,1:3] #view dataset attributes
+gcount <- gcount[,treatmentinfo$sample]
+```
+
+Determine library size
+```{r}
+libSize.df <- data.frame(libSize=colSums(gcount))
+```
+
+Make DGE object
+```{r}
+DGEdat <- DGEList(counts=as.matrix(gcount), samples=treatmentinfo,
+                  group=treatmentinfo$temp)
+dim(DGEdat$counts)
+```
+
+## 2. Pre-filtering
+```{r}
+lib.sizes.cpm <- colSums(gcount)/1000000
+lib.sizes.cpm <- data_frame(sample=colnames(gcount), lib.size=lib.sizes.cpm)
+
+ggplot(lib.sizes.cpm, aes(y = lib.size, x=sample)) +
+  ylab("Library size (per million)") + xlab("Sample") + # Set x and y axis labels
+  ylim(3,10)+
+  geom_jitter(colour = "cadetblue", alpha = 0.5) +
+  geom_boxplot(colour="cadetblue", alpha=0) + 
+  theme_bw() + #Set background color
+  theme(panel.border = element_blank(), # Set border
+                     panel.grid.major = element_blank(), #Set major gridlines
+                     panel.grid.minor = element_blank(), #Set minor gridlines
+                     axis.line = element_line(colour = "black"), #Set axes color
+                      axis.title.x = element_blank(), # No axis title
+                      axis.text.x = element_text(color = "White"), #White-out the x-axis label
+                      axis.ticks.x = element_blank(), # No ticks on x-axis
+                      axis.title.y = element_text(size = 16), #Set Yaxis label size
+                     axis.text=element_text(size=12), #Set Y tick label size
+                      plot.background=element_blank()) + #Set the plot background
+  ggtitle("(b)") + #add a main title
+  scale_color_manual(values=c(AMB="cadetblue", l="indianred3", xl="deeppink4")) + #set treatment colors
+  theme(plot.title = element_text(face = 'bold', 
+                                  size = 12, 
+                                  hjust = 0),
+        legend.position = "bottom") #set title attributes
+mean(lib.sizes.cpm$lib.size)
+median(lib.sizes.cpm$lib.size)
+10/min(lib.sizes.cpm$lib.size)
+
+keep <- rowSums(cpm(gcount) > 3.33) >= 2
+table(keep)
+DGEdat <- DGEdat[keep, , keep.lib.sizes=FALSE]
+```
+
+##  3. Data normalization  
+```{r}
+DGEdat <- calcNormFactors(DGEdat)
+DGEdat$samples
+```
+
+##  4. Plot global gene expression  
+
+Log transform the counts matrix for the next plots
+```{r}
+DGEdat.cpm <- DGEdat #make a copy the edgeR dataset
+DGEdat.cpm$counts <- cpm(DGEdat.cpm$counts, log=TRUE, prior.count=5) #log transform the copy for the next plots
+```
+
+Run a principle coordinates analysis
+```{r}
+d <- data.frame(Group = DGEdat.cpm$samples$group.1, DGEdat.cpm$samples, name = colnames(DGEdat.cpm$counts), timename_genotype=paste(DGEdat.cpm$samples$timename, DGEdat.cpm$samples$group.1, sep="_")) #make a dataframe containing all plotting info
+#d <- filter(d, timename!="12_week" & ploidy != "Diploid")
+pca <- prcomp(t(DGEdat.cpm$counts[,d$sample])) #calculate eigengenes
+pc.data <- summary(out<-prcomp(t(DGEdat.cpm$counts[,d$sample]))); pc.data
+plot(out) #theres a lot of variation in the data
+DGEdat_PCcor <- lapply(d[,c(7:9,11,13,15,17,19,21)], as.factor)
+DGEdat_PCcor <- as.tibble(lapply(DGEdat_PCcor, as.numeric))
+rownames(DGEdat_PCcor) <- d$sample
+all<-cbind(scores(out), DGEdat_PCcor)
+correlations<-round(cor(all, method = "spearman"), digits=2)
+plot(correlations)
+pc.data
+write_csv(as.data.frame(correlations), "Output/1a-Pacu-PC-correlations.csv")
+
+pc_cor<-cbind(scores(out), DGEdat_PCcor)
+pc.data
+
+# kruskal.test(pc_cor$timename ~ pc_cor$group.1, data = pc_cor)
+kruskal.test(PC1 ~ group.1, data = pc_cor)
+
+kruskal.test(PC2 ~ group.1, data = pc_cor)
+kruskal.test(PC2 ~ timename, data = pc_cor)
+kruskal.test(PC2 ~ timename_genotype, data = pc_cor)
+
+kruskal.test(PC5 ~ group.1, data = pc_cor)
+kruskal.test(PC5 ~ timename, data = pc_cor)
+kruskal.test(PC5 ~ timename_genotype, data = pc_cor)
+
+library(FSA)
+timename_group.test <- data.frame(sample=d$sample,genotype=d$group.1, temp=d$temp, timename=as.factor(d$timename), PC2=pc_cor$PC2, PC3=pc_cor$PC3, PC5=pc_cor$PC5)
+timename_group.test$timename <- factor(timename_group.test$timename, levels = c("0_hour", "6_hour", "12_hour", "30_hour", "1_week", "2_week", "4_week", "6_week", "8_week", "12_week"))
+
+timename_group_Amb.test <- filter(timename_group.test, temp=="Amb")
+timename_group_Amb.dunn <- dunnTest(PC5 ~ timename,
+              data=timename_group_Amb.test,
+              method="bh")    # Can adjust p-values;
+                              # See ?p.adjust for options
+
+timename_group_hot.test <- filter(timename_group.test, temp=="Hot")
+timename_group_hot.dunn <- dunnTest(PC5 ~ timename,
+              data=timename_group_hot.test,
+              method="bh")    # Can adjust p-values;
+                              # See ?p.adjust for options
+```
+Visualize first two principle coordinates.
+For Emma's manuscript: 
+Diploid = skyblue3
+Triploid 1 (clades 1,2) = olivedrab4
+Triploid 2 (clades 3,4) = darkgreen
+```{r}
+percentVar <- pca$sdev^2/sum(pca$sdev^2) #save % variation by PC1 and PC2
+d <- data.frame(PC1 = pca$x[, 1], PC7 = pca$x[, 7], d) #make a dataframe containing all plotting info
+
+allgenes_PCA <- ggplot(data = d, aes_string(x = "PC1", y = "PC7")) + 
+  geom_point(size = 3, color='black', aes(shape=temp, fill=group.1)) +
+  scale_shape_manual(guide="legend", values=c('Amb'=21, 'Hot'=24)) +
+  scale_fill_manual(guide="legend", values=c('Group2'="#FFBD5C", 'Group3'="#B873FF", 'Group6'="#4EB900")) +
+  xlab(paste0("PC1: ", round(percentVar[1] * 100), "% variance")) +
+  ylab(paste0("PC7: ", round(percentVar[7] * 100), "% variance")) +
+  coord_fixed() +
+  theme_bw() + #Set background color
+  theme(panel.border = element_blank(), # Set border
+        panel.grid.major = element_blank(), #Set major gridlines
+        panel.grid.minor = element_blank(), #Set minor gridlines
+        axis.line = element_line(colour = "black", size = 0.6), #Set axes color
+        plot.background=element_blank(), #Set the plot background
+        axis.title = element_text(size = 14)) + #Axis title sizet
+  guides(fill = guide_legend(override.aes = list(shape=21))); allgenes_PCA
+#ggsave("Output/1a-Pacu-edgeR-allsamples-DEGs-PCA.pdf", allgenes_PCA)
+```
+
+Plot as a dendrogram
+```{r}
+tree <- hclust(dist(as.matrix(t(DGEdat.cpm$counts))))
+dend <- as.dendrogram(tree)
+#pdf("Output/NEW_tree_SNPs_allsamples-allgenes-.pdf", height = 3, width = 20)
+plot(dend)
+#dev.off()
+```
+
+1416 is an outlier and will be removed from DGE analysis.
